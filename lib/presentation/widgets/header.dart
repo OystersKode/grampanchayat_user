@@ -26,12 +26,13 @@ class AppHeader extends StatelessWidget {
       ),
       child: Stack(
         children: [
+          // Silhouette Background with updated working image URL
           Opacity(
             opacity: 0.1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1590059391056-b08e579737ec?q=80&w=2000'),
+                  image: NetworkImage('https://images.unsplash.com/photo-1541844053589-3d5b9022204a?q=80&w=2000'),
                   fit: BoxFit.cover,
                 ),
               ),

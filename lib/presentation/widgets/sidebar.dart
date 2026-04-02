@@ -71,6 +71,19 @@ class AppSidebar extends StatelessWidget {
                   title: 'Settings',
                   onTap: () => Navigator.pop(context),
                 ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.logout,
+                  title: 'Logout',
+                  onTap: () {
+                    // Navigate to signin and remove all previous routes
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.signin,
+                      (route) => false,
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -105,14 +118,14 @@ class AppSidebar extends StatelessWidget {
         ),
       ),
       onTap: () {
-        Navigator.pop(context);
-        if (route != null) {
-          // If we are already on the route, don't push it again or use replacement
-          if (ModalRoute.of(context)?.settings.name != route) {
-             Navigator.pushNamed(context, route);
-          }
-        } else if (onTap != null) {
+        if (onTap != null) {
           onTap();
+        } else if (route != null) {
+          Navigator.pop(context); // Close drawer
+          // If we are already on the route, don't push it again
+          if (ModalRoute.of(context)?.settings.name != route) {
+            Navigator.pushNamed(context, route);
+          }
         }
       },
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/header.dart';
-import '../news/news_screen.dart';
+import '../../../routes/app_routes.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -12,24 +12,22 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   int _currentStep = 1;
   final SignupData _data = SignupData();
+  bool _obscurePassword = true;
 
   void _nextStep() {
     if (_currentStep < 4) {
-      setState(() {
-        _currentStep++;
-      });
+      setState(() => _currentStep++);
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const NewsScreen()),
-      );
+      Navigator.pushReplacementNamed(context, AppRoutes.news);
     }
   }
 
-  void _goToStep(int step) {
-    setState(() {
-      _currentStep = step;
-    });
+  void _prevStep() {
+    if (_currentStep > 1) {
+      setState(() => _currentStep--);
+    } else {
+      Navigator.pop(context); // Go back to Sign In screen
+    }
   }
 
   @override
@@ -52,6 +50,54 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
+  Widget _buildStepper() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32),
+      child: Row(
+        children: List.generate(4, (index) {
+          int stepNum = index + 1;
+          bool isCompleted = _currentStep > stepNum;
+          bool isActive = _currentStep == stepNum;
+
+          return Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isCompleted || isActive ? const Color(0xFF775A19) : const Color(0xFFF5EDDE),
+                    border: isActive ? Border.all(color: const Color(0xFF49000A), width: 2) : null,
+                  ),
+                  child: Center(
+                    child: isCompleted
+                        ? const Icon(Icons.check, size: 16, color: Colors.white)
+                        : Text(
+                            '$stepNum',
+                            style: TextStyle(
+                              fontSize: 12, 
+                              fontWeight: FontWeight.bold,
+                              color: isActive ? Colors.white : const Color(0xFF8A7171),
+                            ),
+                          ),
+                  ),
+                ),
+                if (index < 3)
+                  Expanded(
+                    child: Container(
+                      height: 2,
+                      color: isCompleted ? const Color(0xFF775A19) : const Color(0xFFF5EDDE),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
   Widget _buildStepContent() {
     return Container(
       transform: Matrix4.translationValues(0, -40, 0),
@@ -70,6 +116,7 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
       child: Column(
         children: [
+          _buildStepper(),
           if (_currentStep == 1) _buildStep1(),
           if (_currentStep == 2) _buildStep2(),
           if (_currentStep == 3) _buildStep3(),
@@ -82,12 +129,12 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget _buildStep1() {
     return Column(
       children: [
-        _buildStepTitle('Citizen Login'),
+        _buildStepTitle('Citizen Signup'),
         _buildLabel('FULL NAME'),
-        _buildTextField('Enter your full name', Icons.person, (val) => _data.name = val),
+        _buildTextField('Enter your full name', Icons.person_outline, (val) => _data.name = val),
         const SizedBox(height: 20),
         _buildLabel('EMAIL ADDRESS'),
-        _buildTextField('Enter your email', Icons.alternate_email, (val) => _data.email = val),
+        _buildTextField('Enter your email', Icons.alternate_email_outlined, (val) => _data.email = val),
         const SizedBox(height: 24),
         _buildPrimaryButton('Send OTP', Icons.forward_to_inbox, () {}),
         const SizedBox(height: 40),
@@ -100,7 +147,7 @@ class _SignupScreenState extends State<SignupScreen> {
           children: List.generate(6, (index) => _buildOtpBox()),
         ),
         const SizedBox(height: 24),
-        _buildSecondaryButton('Verify OTP', Icons.verified, () {}),
+        _buildSecondaryButton('Verify OTP', Icons.verified_outlined, () {}),
         const SizedBox(height: 12),
         TextButton(
           onPressed: () {},
@@ -108,6 +155,10 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
         const SizedBox(height: 24),
         _buildNextStepButton(_nextStep),
+        TextButton(
+          onPressed: _prevStep,
+          child: const Text('Back to Sign In', style: TextStyle(color: Color(0xFF775A19))),
+        ),
       ],
     );
   }
@@ -117,24 +168,21 @@ class _SignupScreenState extends State<SignupScreen> {
       children: [
         _buildStepTitle('Set Your Password'),
         _buildLabel('CREATE PASSWORD'),
-        _buildTextField('Enter new password', Icons.lock, (val) => _data.password = val, obscure: true),
+        _buildPasswordField('Enter new password', (val) => _data.password = val),
         const SizedBox(height: 20),
         _buildLabel('CONFIRM PASSWORD'),
-        _buildTextField('Confirm your password', Icons.lock, (val) {}, obscure: true),
+        _buildPasswordField('Confirm your password', (val) {}),
         const SizedBox(height: 8),
         const Align(
           alignment: Alignment.centerLeft,
-          child: Text(
-            'Password must be at least 8 characters',
-            style: TextStyle(color: Color(0xFF775A19), fontSize: 12),
-          ),
+          child: Text('Password must be at least 8 characters', style: TextStyle(color: Color(0xFF775A19), fontSize: 12)),
         ),
         const SizedBox(height: 40),
         _buildNextStepButton(_nextStep, label: 'Save Password'),
         const SizedBox(height: 12),
         TextButton(
-          onPressed: () => _goToStep(1),
-          child: const Text('Back to Login', style: TextStyle(color: Color(0xFF775A19))),
+          onPressed: _prevStep,
+          child: const Text('Back to Profile Info', style: TextStyle(color: Color(0xFF775A19))),
         ),
       ],
     );
@@ -145,18 +193,18 @@ class _SignupScreenState extends State<SignupScreen> {
       children: [
         _buildStepTitle('Select Location'),
         _buildLabel('DISTRICT'),
-        _buildDropdown('Select District', Icons.location_on, (val) => _data.district = val ?? ''),
+        _buildDropdown('Select District', Icons.location_on_outlined, (val) => _data.district = val ?? ''),
         const SizedBox(height: 20),
         _buildLabel('TALUKA'),
-        _buildDropdown('Select Taluka', Icons.explore, (val) => _data.taluka = val ?? ''),
+        _buildDropdown('Select Taluka', Icons.explore_outlined, (val) => _data.taluka = val ?? ''),
         const SizedBox(height: 20),
         _buildLabel('GRAM PANCHAYAT'),
-        _buildDropdown('Select Grampanchayat', Icons.holiday_village, (val) => _data.gramPanchayat = val ?? ''),
+        _buildDropdown('Select Grampanchayat', Icons.holiday_village_outlined, (val) => _data.gramPanchayat = val ?? ''),
         const SizedBox(height: 40),
         _buildNextStepButton(_nextStep),
         const SizedBox(height: 12),
         TextButton(
-          onPressed: () => _goToStep(2),
+          onPressed: _prevStep,
           child: const Text('Back to Password', style: TextStyle(color: Color(0xFF775A19))),
         ),
       ],
@@ -167,24 +215,24 @@ class _SignupScreenState extends State<SignupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Center(child: _buildStepTitle('Confirm Your Details')),
-        _buildConfirmItem('NAME', _data.name.isEmpty ? 'Rajesh Kumar Sharma' : _data.name),
-        _buildConfirmItem('EMAIL', _data.email.isEmpty ? 'rajesh.sharma@example.in' : _data.email),
+        Center(child: _buildStepTitle('Confirm Details')),
+        _buildConfirmItem('NAME', _data.name.isEmpty ? 'Manjunath Rao' : _data.name),
+        _buildConfirmItem('EMAIL', _data.email.isEmpty ? 'manjunath@example.com' : _data.email),
         Row(
           children: [
             Expanded(child: _buildConfirmItem('DISTRICT', _data.district.isEmpty ? 'Pune' : _data.district)),
             Expanded(child: _buildConfirmItem('TALUKA', _data.taluka.isEmpty ? 'Haveli' : _data.taluka)),
           ],
         ),
-        _buildConfirmItem('GRAM PANCHAYAT', _data.gramPanchayat.isEmpty ? 'Wagholi Gram Panchayat' : _data.gramPanchayat),
+        _buildConfirmItem('GRAM PANCHAYAT', _data.gramPanchayat.isEmpty ? 'Wagholi' : _data.gramPanchayat),
         const SizedBox(height: 40),
         _buildNextStepButton(_nextStep, label: 'Confirm & Submit'),
         const SizedBox(height: 16),
         Center(
           child: TextButton(
-            onPressed: () => _goToStep(1),
+            onPressed: _prevStep,
             child: const Text(
-              'Edit Details',
+              'Back to Location',
               style: TextStyle(color: Color(0xFF775A19), fontWeight: FontWeight.bold),
             ),
           ),
@@ -198,6 +246,7 @@ class _SignupScreenState extends State<SignupScreen> {
       children: [
         Text(
           title,
+          textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF49000A), fontFamily: 'serif'),
         ),
         const SizedBox(height: 8),
@@ -220,17 +269,44 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildTextField(String hint, IconData icon, Function(String) onChanged, {bool obscure = false}) {
+  Widget _buildTextField(String hint, IconData icon, Function(String) onChanged) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF5EDDE),
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
-        obscureText: obscure,
         onChanged: onChanged,
         decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: const Color(0xFF8A7171)),
+          prefixIcon: Icon(icon, color: const Color(0xFF8A7171), size: 20),
+          hintText: hint,
+          hintStyle: const TextStyle(color: Color(0xFF8A7171), fontSize: 14),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(String hint, Function(String) onChanged) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5EDDE),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: TextField(
+        obscureText: _obscurePassword,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF8A7171), size: 20),
+          suffixIcon: IconButton(
+            icon: Icon(
+              _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+              color: const Color(0xFF8A7171),
+              size: 20,
+            ),
+            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+          ),
           hintText: hint,
           hintStyle: const TextStyle(color: Color(0xFF8A7171), fontSize: 14),
           border: InputBorder.none,
@@ -250,13 +326,10 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF8A7171)),
+          Icon(icon, color: const Color(0xFF8A7171), size: 20),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              hint,
-              style: const TextStyle(color: Color(0xFF8A7171), fontSize: 14),
-            ),
+            child: Text(hint, style: const TextStyle(color: Color(0xFF8A7171), fontSize: 14)),
           ),
           const Icon(Icons.expand_more, color: Color(0xFF8A7171)),
         ],
@@ -344,15 +417,9 @@ class _SignupScreenState extends State<SignupScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Color(0xFF8A7171)),
-          ),
+          Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Color(0xFF8A7171))),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E1B13)),
-          ),
+          Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E1B13))),
         ],
       ),
     );
@@ -363,10 +430,7 @@ class _SignupScreenState extends State<SignupScreen> {
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
       child: Column(
         children: [
-          const Text(
-            'SECURE ACCESS FOR CITIZENS',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.5, color: Color(0xFF49000A)),
-          ),
+          const Text('SECURE ACCESS FOR CITIZENS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.5, color: Color(0xFF49000A))),
           const SizedBox(height: 4),
           Text(
             '© 2024 Digital Custodian Governance.\nOfficial Restricted Access.',
