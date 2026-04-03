@@ -1,7 +1,67 @@
 import 'package:flutter/material.dart';
+import '../../../data/repositories/app_repository.dart';
 
-class MembershipScreen extends StatelessWidget {
+class MembershipScreen extends StatefulWidget {
   const MembershipScreen({super.key});
+
+  @override
+  State<MembershipScreen> createState() => _MembershipScreenState();
+}
+
+class _MembershipScreenState extends State<MembershipScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final String name = _nameController.text.trim();
+    final String phone = _phoneController.text.trim();
+    final String address = _addressController.text.trim();
+
+    if (name.isEmpty || phone.isEmpty) {
+      _showMessage('Name and phone number are required');
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      await AppRepository.instance.submitMemberRequest(
+        name: name,
+        mobileNumber: phone,
+        address: address,
+      );
+      _showMessage('Request submitted successfully');
+      _nameController.clear();
+      _phoneController.clear();
+      _addressController.clear();
+    } catch (error) {
+      _showMessage('Submission failed: $error');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
+  }
+
+  void _showMessage(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(text)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,18 +113,26 @@ class MembershipScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 40),
                     _buildFieldLabel('FULL NAME'),
-                    _buildTextField(Icons.person_outline),
+                    _buildTextField(Icons.person_outline, controller: _nameController),
                     const SizedBox(height: 32),
                     _buildFieldLabel('PHONE NUMBER'),
-                    _buildTextField(Icons.phone_outlined, keyboardType: TextInputType.phone),
+                    _buildTextField(
+                      Icons.phone_outlined,
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                    ),
                     const SizedBox(height: 32),
                     _buildFieldLabel('ADDRESS'),
-                    _buildTextField(Icons.location_on_outlined, maxLines: 3),
+                    _buildTextField(
+                      Icons.location_on_outlined,
+                      controller: _addressController,
+                      maxLines: 3,
+                    ),
                     const SizedBox(height: 48),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: _isSubmitting ? null : _submit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF5E0006),
                           foregroundColor: Colors.white,
@@ -73,14 +141,20 @@ class MembershipScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
-                          'SUBMIT',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              )
+                            : const Text(
+                                'SUBMIT',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
                       ),
                     ),
                   ],
@@ -108,8 +182,14 @@ class MembershipScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(IconData icon, {TextInputType? keyboardType, int maxLines = 1}) {
+  Widget _buildTextField(
+    IconData icon, {
+    required TextEditingController controller,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+  }) {
     return TextField(
+      controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
       decoration: InputDecoration(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'data/repositories/app_repository.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
 
 void main() {
+  AppRepository.initialize();
   runApp(const GramPanchayatApp());
 }
 

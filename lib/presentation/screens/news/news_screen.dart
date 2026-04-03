@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
+import '../../../data/models/news_model.dart';
+import '../../../data/repositories/app_repository.dart';
 import '../../widgets/announcement_card.dart';
 import '../../widgets/sidebar.dart';
-import '../../../routes/app_routes.dart';
+import '../news_details/news_details_screen.dart';
 
-class NewsScreen extends StatelessWidget {
+class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
+
+  @override
+  State<NewsScreen> createState() => _NewsScreenState();
+}
+
+class _NewsScreenState extends State<NewsScreen> {
+  late Future<List<News>> _newsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _newsFuture = AppRepository.instance.getNews();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,39 +95,74 @@ class NewsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          AnnouncementCard(
-            category: 'INFRASTRUCTURE',
-            title: 'New Water Supply Scheme Launched in Village',
-            kannadaTitle: 'ಗ್ರಾಮದಲ್ಲಿ ಹೊಸ ಕುಡಿಯುವ ನೀರಿನ ಯೋಜನೆ ಚಾಲನೆ',
-            imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD3Ssp976vTaxFXk7l1ccimhnvrRrPTZw4QyaMY-AJfD08RcOj6DO4x8kdKcAuKf9-8-40ymcsHSAo5dkXniljpHrlzWRo9viVEyB75xTBRLGstNv7sXzSGxw9DStKTTT9LDCZUM0cLsiV3Q2TbeUwyUZG1vf0iSpUT606BPD7Qd9XJmLt-IN2_ZWaHhZBwh3Ajlr4Rih6_uEHV0_wFsvqgLNKsud70DtcbBA42wPLl2I3r4PZK-5YQZThPW9puDaj9LYkufn5iSsY',
-            likes: '248',
-            onTap: () => Navigator.pushNamed(context, AppRoutes.newsDetails),
-          ),
-          AnnouncementCard(
-            category: 'HEALTH',
-            categoryColor: const Color(0xFF370002),
-            title: 'Free Health Camp on Sunday at Panchayat Office',
-            kannadaTitle: 'ಭಾನುವಾರ ಪಂಚಾಯತ್ ಕಚೇರಿಯಲ್ಲಿ ಉಚಿತ ಆರೋಗ್ಯ ಶಿಬಿರ',
-            imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDdi3swwZeB2Ij1Snpe26ojXqPz19W63DkLgq-M_Nkc1hm_a1KzLtoXtUY0b9S4j5LpRuDlAeVYwfeHkY89CoNTWC5_CQ6gWyX6JcA-nUeSzxSJV83Bnu-sqNgpmRdBeFuJvpBe-EH4RYzjHpRMFY8YtDrWCJt7z8KS6as6cHQkKBm5DGkHtmWcA7QGM1ZIG9jl3KWIChpQcH2E6PE1um2aJBc5x537spjrZFlvpEl40JrIWlT_IjWZLVIDaRu8boQRDNOyPCO5A4Q',
-            likes: '1.2k',
-            onTap: () => Navigator.pushNamed(context, AppRoutes.newsDetails),
-          ),
-          AnnouncementCard(
-            category: 'AGRICULTURE',
-            categoryColor: const Color(0xFF442205),
-            title: 'Farmer Subsidy Registration Deadline Extended',
-            kannadaTitle: 'ರೈತ ಸಹಾಯಧನ ನೋಂದಣಿ ದಿನಾಂಕ ವಿಸ್ತರಣೆ',
-            imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDS7dJvSTVgSGqX1wC7_Cev6qKA5OzFa6gzI2GZI8s-pUObQ9O6RX8hbQJLi_e0nXAohm7AP8RA6iqN_qfKZreUKMg4T6Oy02DM6Z_BYafV2YH98l90ZB17vBOAYd89K18ZoVOqNu_AVfU_QV_n1gMS-Ns4EUZ3s5ZJTXqiFYjqUw6S-cJZHQrraTtsOvmiUmjSKiKbSb5qT2i4-uyPjeZYaq0siZTLQyQFyvVaN-xN79-knaATebHurfzENSI4sfGZZNy_-8yVjO4',
-            likes: '892',
-            onTap: () => Navigator.pushNamed(context, AppRoutes.newsDetails),
-          ),
-          AnnouncementCard(
-            category: 'SUCCESS STORY',
-            title: 'Road Repair Work Completed Successfully',
-            kannadaTitle: 'ರಸ್ತೆ ದುರಸ್ತಿ ಕಾಮಗಾರಿ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ',
-            imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnUEJ1c-5eC7qsTj6Z7GqxZ7MWVSDGeZyGlz2zSgGDHvCKkxtkPpJy7ZXo9euOm_3VDJoqxV00Mgfa_srX5WWUfO4CelzyPZyo-VzjsOO_8qzXK3UggEOkVc37nHHXeEe-PFJhF7_cyAa_SbCU0IhPmQLWudQCDhhrNaPPqVVB7wmmdujZD6HIbAtltsMVZngcvq0dBAE53IkrRVuNgTS0tAU68qk4qONghdjBv6xoNG-y_wLQBbm0KBKg_5Vxal82PJSPofXUIAE',
-            likes: '2.1k',
-            onTap: () => Navigator.pushNamed(context, AppRoutes.newsDetails),
+          FutureBuilder<List<News>>(
+            future: _newsFuture,
+            builder: (BuildContext context, AsyncSnapshot<List<News>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 48),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Unable to load updates.\n${snapshot.error}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Color(0xFF5E0006)),
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _newsFuture = AppRepository.instance.getNews();
+                          });
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              final List<News> items = snapshot.data ?? <News>[];
+              if (items.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Text(
+                    'No announcements available.',
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }
+
+              return Column(
+                children: items.map((News item) {
+                  final String imageUrl = item.headerImageUrl.isNotEmpty
+                      ? item.headerImageUrl
+                      : (item.images.isNotEmpty ? item.images.first : '');
+                  return AnnouncementCard(
+                    category: item.category,
+                    title: item.title,
+                    kannadaTitle: item.description,
+                    imageUrl: imageUrl,
+                    likes: item.likeCount.toString(),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<NewsDetailsScreen>(
+                          builder: (BuildContext context) => NewsDetailsScreen(news: item),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+              );
+            },
           ),
         ],
       ),
