@@ -37,8 +37,18 @@ class News {
       }).where((String item) => item.isNotEmpty).toList(),
       category: ((json['category'] as String?) ?? 'Updates').toUpperCase(),
       date: _formatDate(json['created_at'] as String?),
-      likeCount: _asInt(json['like_count']),
+      likeCount: _parseLikeCount(json['like_count']),
     );
+  }
+
+  static int _parseLikeCount(Object? value) {
+    if (value is int) {
+      return value;
+    }
+    if (value is String) {
+      return int.tryParse(value) ?? 0;
+    }
+    return 0;
   }
 
   static String _formatDate(String? value) {
