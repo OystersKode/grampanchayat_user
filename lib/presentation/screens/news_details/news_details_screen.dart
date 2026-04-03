@@ -210,7 +210,7 @@ class NewsDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'The Shivapura Gram Panchayat is pleased to announce the commencement of the 2024 Farmer Subsidy Program. This initiative is designed to support our local agricultural community by providing financial assistance for high-quality seeds, modern irrigation equipment, and organic fertilizers.',
+                      'The Kagwad Gram Panchayat is pleased to announce the commencement of the 2024 Farmer Subsidy Program. This initiative is designed to support our local agricultural community by providing financial assistance for high-quality seeds, modern irrigation equipment, and organic fertilizers.',
                       style: TextStyle(
                         fontSize: 16,
                         color: Color(0xFF57413F),
@@ -219,7 +219,7 @@ class NewsDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'ಶಿವಪುರ ಗ್ರಾಮ ಪಂಚಾಯಿತಿಯು 2024 ರ ರೈತ ಸಹಾಯಧನ ಕಾರ್ಯಕ್ರಮದ ಪ್ರಾರಂಭವನ್ನು ಘೋಷಿಸಲು ಸಂತೋಷಪಡುತ್ತದೆ. ಈ ಉಪಕ್ರಮವು ಉತ್ತಮ ಗುಣಮಟ್ಟದ ಬಿತ್ತನೆ ಬೀಜಗಳು, ಆಧುನಿಕ ನೀರಾವರಿ ಉಪಕರಣಗಳು ಮತ್ತು ಸಾವಯವ ಗೊಬ್ಬರಗಳಿಗೆ ಹಣಕಾಸಿನ ನೆರವು ನೀಡುವ ಮೂಲಕ ನಮ್ಮ ಸ್ಥಳೀಯ ಕೃಷಿ ಸಮೂದಾಯವನ್ನು ಬೆಂಬಲಿಸಲು ವಿನ್ಯಾಸಗೊಳಿಸಲಾಗಿದೆ.',
+                      'ಕಾಗವಾಡ ಗ್ರಾಮ ಪಂಚಾಯಿತಿಯು 2024 ರ ರೈತ ಸಹಾಯಧನ ಕಾರ್ಯಕ್ರಮದ ಪ್ರಾರಂಭವನ್ನು ಘೋಷಿಸಲು ಸಂತೋಷಪಡುತ್ತದೆ. ಈ ಉಪಕ್ರಮವು ಉತ್ತಮ ಗುಣಮಟ್ಟದ ಬಿತ್ತನೆ ಬೀಜಗಳು, ಆಧುನಿಕ ನೀರಾವರಿ ಉಪಕರಣಗಳು ಮತ್ತು ಸಾವಯವ ಗೊಬ್ಬರಗಳಿಗೆ ಹಣಕಾಸಿನ ನೆರವು ನೀಡುವ ಮೂಲಕ ನಮ್ಮ ಸ್ಥಳೀಯ ಕೃಷಿ ಸಮೂದಾಯವನ್ನು ಬೆಂಬಲಿಸಲು ವಿನ್ಯಾಸಗೊಳಿಸಲಾಗಿದೆ.',
                       style: TextStyle(
                         fontSize: 16,
                         color: Color(0xFF57413F),
@@ -267,7 +267,7 @@ class NewsDetailsScreen extends StatelessWidget {
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF370002)),
                           ),
                           const SizedBox(height: 12),
-                          _buildBulletPoint('Resident of Shivapura Panchayat'),
+                          _buildBulletPoint('Resident of Kagwad Panchayat'),
                           _buildBulletPoint('Possession of valid RTC/Pahani documents'),
                           _buildBulletPoint('Small or marginal land holding status'),
                         ],

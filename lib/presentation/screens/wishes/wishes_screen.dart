@@ -69,7 +69,7 @@ class WishesScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Celebrating the milestones, festivals, and achievements that bind Shivapura together.',
+            'Celebrating the milestones, festivals, and achievements that bind Kagwad together.',
             style: TextStyle(
               fontSize: 16,
               color: Color(0xFF653D1E),
@@ -87,7 +87,7 @@ class WishesScreen extends StatelessWidget {
           const WishCard(
             type: WishType.festival,
             title: 'Ugadi Festival Wishes to All Villagers 🌸',
-            description: 'May this New Year bring prosperity, health, and abundant harvests to every household in Shivapura.',
+            description: 'May this New Year bring prosperity, health, and abundant harvests to every household in Kagwad.',
             imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuATPRDTKltq3NSKCtVaz3jo55Z-ktd5R17yM_pbnS8xCGjMxqwoSQAle0c7sKT0SslbtlZYeun4a34np0nNfcvvIDRJRmYZofTZNnRd3WihC59MAWSlw2Sz9J9h_jT0xVe0hahYpPGJEAb5HaFT6k2_W6OKY1av6zXPyZO0HPlEOA0EpN0XPDJaMO2iif4HYmXgSMIGMCigrl7msLBpvLtvyFkfwGRhhfEXY_5SENJHORKIFitXFR_5tPOY_AfZLGQVbdQOxtEb4IE',
             likes: '128',
           ),

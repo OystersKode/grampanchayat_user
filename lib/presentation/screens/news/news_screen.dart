@@ -19,7 +19,7 @@ class NewsScreen extends StatelessWidget {
           ),
         ),
         title: const Text(
-          'Shivapura Panchayat',
+          'Kagwad Panchayat',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,

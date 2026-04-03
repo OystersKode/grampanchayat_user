@@ -14,24 +14,13 @@ class AppSidebar extends StatelessWidget {
             decoration: const BoxDecoration(
               color: Color(0xFF5E0006),
             ),
-            child: Center(
+            child: const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Color(0xFFFFF2E1),
-                      child: Icon(Icons.person, size: 40, color: Color(0xFF5E0006)),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
+                  Icon(Icons.account_balance, size: 48, color: Colors.white),
+                  SizedBox(height: 12),
+                  Text(
                     'Panchayat Portal',
                     style: TextStyle(
                       color: Colors.white,
@@ -49,12 +38,6 @@ class AppSidebar extends StatelessWidget {
               children: [
                 _buildDrawerItem(
                   context,
-                  icon: Icons.person_outline,
-                  title: 'Profile',
-                  route: AppRoutes.profile,
-                ),
-                _buildDrawerItem(
-                  context,
                   icon: Icons.newspaper,
                   title: 'News',
                   route: AppRoutes.news,
@@ -67,22 +50,15 @@ class AppSidebar extends StatelessWidget {
                 ),
                 _buildDrawerItem(
                   context,
-                  icon: Icons.settings_outlined,
-                  title: 'Settings',
-                  onTap: () => Navigator.pop(context),
+                  icon: Icons.person_add_alt_1_outlined,
+                  title: 'Become a Member',
+                  route: AppRoutes.membership,
                 ),
                 _buildDrawerItem(
                   context,
-                  icon: Icons.logout,
-                  title: 'Logout',
-                  onTap: () {
-                    // Navigate to signin and remove all previous routes
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      AppRoutes.signin,
-                      (route) => false,
-                    );
-                  },
+                  icon: Icons.settings_outlined,
+                  title: 'Settings',
+                  route: AppRoutes.settings,
                 ),
               ],
             ),

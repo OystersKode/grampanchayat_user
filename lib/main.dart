@@ -15,7 +15,7 @@ class GramPanchayatApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Gram Panchayat Portal",
       theme: AppTheme.lightTheme,
-      initialRoute: AppRoutes.signin,
+      initialRoute: AppRoutes.news,
       routes: AppRoutes.routes,
     );
   }
