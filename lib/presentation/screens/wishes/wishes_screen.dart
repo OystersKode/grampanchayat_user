@@ -34,6 +34,7 @@ class _WishesScreenState extends State<WishesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFFF8EF),
       appBar: AppBar(
         backgroundColor: const Color(0xFF5E0006),
         leading: IconButton(
