@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 import '../../data/repositories/app_repository.dart';
 
 class AnnouncementCard extends StatefulWidget {
@@ -7,7 +10,7 @@ class AnnouncementCard extends StatefulWidget {
   final String category;
   final Color? categoryColor;
   final String title;
-  final String kannadaTitle;
+  final String description;
   final String imageUrl;
   final String likes;
   final bool initialIsLiked;
@@ -20,7 +23,7 @@ class AnnouncementCard extends StatefulWidget {
     required this.category,
     this.categoryColor,
     required this.title,
-    required this.kannadaTitle,
+    required this.description,
     required this.imageUrl,
     required this.likes,
     this.initialIsLiked = false,
@@ -42,6 +45,17 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
     super.initState();
     _likeCount = int.tryParse(widget.likes) ?? 0;
     _isLiked = widget.initialIsLiked;
+  }
+
+  @override
+  void didUpdateWidget(AnnouncementCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.likes != widget.likes || oldWidget.initialIsLiked != widget.initialIsLiked) {
+      setState(() {
+        _likeCount = int.tryParse(widget.likes) ?? 0;
+        _isLiked = widget.initialIsLiked;
+      });
+    }
   }
 
   Future<void> _handleLike() async {
@@ -83,11 +97,36 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
     }
   }
 
-  void _handleShare() {
-    Share.share(
-      'Check out this news from Kagwad Panchayat: ${widget.title}\n\n'
-      'View more: ${widget.shareUrl}',
-    );
+  Future<void> _handleShare() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+
+    try {
+      final String text = '*${widget.title}*\n\n'
+          '${widget.description.length > 200 ? widget.description.substring(0, 200) + "..." : widget.description}\n\n'
+          '📍 *Village Details:* Kagwad Gram Panchayat';
+
+      if (widget.imageUrl.isNotEmpty) {
+        final response = await http.get(Uri.parse(widget.imageUrl));
+        final bytes = response.bodyBytes;
+
+        final temp = await getTemporaryDirectory();
+        final path = '${temp.path}/share_news_${widget.contentId}.png';
+        File(path).writeAsBytesSync(bytes);
+
+        await Share.shareXFiles(
+          [XFile(path)],
+          text: text,
+        );
+      } else {
+        await Share.share(text);
+      }
+    } catch (e) {
+      debugPrint('Share Error: $e');
+      Share.share('*${widget.title}*');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -165,6 +204,8 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                       const SizedBox(height: 12),
                       Text(
                         widget.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -174,11 +215,14 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        widget.kannadaTitle,
+                        widget.description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          height: 1.3,
                         ),
                       ),
                     ],

@@ -1,0 +1,34 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class SettingsService extends ChangeNotifier {
+  static SettingsService? _instance;
+  final SharedPreferences _prefs;
+
+  SettingsService._(this._prefs);
+
+  static Future<void> initialize() async {
+    final prefs = await SharedPreferences.getInstance();
+    _instance = SettingsService._(prefs);
+  }
+
+  static SettingsService get instance {
+    if (_instance == null) {
+      throw StateError('SettingsService.initialize() must be called first');
+    }
+    return _instance!;
+  }
+
+  double get fontSize => _prefs.getDouble('font_size') ?? 16.0;
+  bool get notificationsEnabled => _prefs.getBool('notifications_enabled') ?? true;
+
+  Future<void> setFontSize(double size) async {
+    await _prefs.setDouble('font_size', size);
+    notifyListeners();
+  }
+
+  Future<void> setNotificationsEnabled(bool enabled) async {
+    await _prefs.setBool('notifications_enabled', enabled);
+    notifyListeners();
+  }
+}

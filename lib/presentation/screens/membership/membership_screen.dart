@@ -27,8 +27,18 @@ class _MembershipScreenState extends State<MembershipScreen> {
     final String phone = _phoneController.text.trim();
     final String address = _addressController.text.trim();
 
-    if (name.isEmpty || phone.isEmpty) {
-      _showMessage('Name and phone number are required');
+    if (name.isEmpty) {
+      _showMessage('Please enter your name');
+      return;
+    }
+
+    if (phone.isEmpty) {
+      _showMessage('Please enter your phone number');
+      return;
+    }
+
+    if (phone.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(phone)) {
+      _showMessage('Please enter a valid 10-digit phone number');
       return;
     }
 
@@ -120,6 +130,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                       Icons.phone_outlined,
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
+                      maxLength: 10,
                     ),
                     const SizedBox(height: 32),
                     _buildFieldLabel('ADDRESS'),
@@ -187,11 +198,13 @@ class _MembershipScreenState extends State<MembershipScreen> {
     required TextEditingController controller,
     TextInputType? keyboardType,
     int maxLines = 1,
+    int? maxLength,
   }) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
+      maxLength: maxLength,
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: const Color(0xFF57413F), size: 22),
         enabledBorder: const UnderlineInputBorder(
@@ -201,6 +214,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
           borderSide: BorderSide(color: Color(0xFF5E0006), width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        counterText: '',
       ),
     );
   }

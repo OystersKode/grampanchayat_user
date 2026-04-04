@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import '../../../core/services/settings_service.dart';
 import '../../../data/models/wish_model.dart';
 import '../../../data/repositories/app_repository.dart';
 import '../../widgets/like_share_buttons.dart';
@@ -47,6 +48,32 @@ class _WishesScreenState extends State<WishesScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: TextButton(
+              onPressed: () {
+                // Placeholder
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.1),
+                side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+              ),
+              child: const Text(
+                'EN/ಕನ್ನಡ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       drawer: const AppSidebar(),
       body: RefreshIndicator(
@@ -58,11 +85,15 @@ class _WishesScreenState extends State<WishesScreen> {
               return const Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
             }
             final wishes = snapshot.data ?? [];
             if (wishes.isEmpty) {
-              return const Center(child: Text('No wishes yet. Check back later!'));
+              return const Center(
+                child: Text('No wishes yet. Check back later!'),
+              );
             }
 
             return ListView.builder(
@@ -218,6 +249,8 @@ class _WishCardState extends State<WishCard> {
                 const SizedBox(height: 8),
                 Text(
                   widget.wish.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -227,6 +260,8 @@ class _WishCardState extends State<WishCard> {
                 const SizedBox(height: 8),
                 Text(
                   widget.wish.content,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 14,
                     color: Color(0xFF653D1E),

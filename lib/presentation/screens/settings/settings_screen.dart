@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/services/settings_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -8,13 +9,34 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  double _fontSize = 16.0;
-  bool _notificationsEnabled = true;
+  late double _fontSize;
+  late bool _notificationsEnabled;
+
+  @override
+  void initState() {
+    super.initState();
+    _fontSize = SettingsService.instance.fontSize;
+    _notificationsEnabled = SettingsService.instance.notificationsEnabled;
+  }
+
+  Future<void> _saveSettings() async {
+    await SettingsService.instance.setFontSize(_fontSize);
+    await SettingsService.instance.setNotificationsEnabled(_notificationsEnabled);
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Settings updated successfully'),
+          backgroundColor: Color(0xFF5E0006),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFBE2),
+      backgroundColor: const Color(0xFFFFF8EF),
       appBar: AppBar(
         backgroundColor: const Color(0xFF5E0006),
         elevation: 0,
@@ -37,31 +59,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(32),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5DC),
-                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Accessibility Section
                     const Text(
                       'ACCESSIBILITY',
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2.0,
-                        color: Color(0xFF57413F),
+                        color: Color(0xFF8A7171),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     const Text(
                       'Font Size',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1B1D0E),
+                        color: Color(0xFF370002),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -69,13 +97,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
                         Text('A', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-                        Text('A', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text('A', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                       ],
                     ),
                     Slider(
                       value: _fontSize,
-                      min: 12,
+                      min: 14,
                       max: 24,
+                      divisions: 5,
                       activeColor: const Color(0xFF5E0006),
                       inactiveColor: const Color(0xFFDEC0BC),
                       onChanged: (value) {
@@ -84,17 +113,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         });
                       },
                     ),
-                    const SizedBox(height: 24),
-                    // Preview box
+                    const SizedBox(height: 16),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: const Border(
-                          bottom: BorderSide(color: Color(0xFF370002), width: 2),
-                        ),
+                        color: const Color(0xFFFFF8EF),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFDEC0BC)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,45 +131,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.5,
-                              color: Color(0xFF57413F),
+                              color: Color(0xFF8A7171),
                             ),
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Portal Text Preview',
+                            'Kagwad Gram Panchayat updates will look like this.',
                             style: TextStyle(
                               fontSize: _fontSize,
-                              color: const Color(0xFF1B1D0E),
+                              color: const Color(0xFF370002),
+                              height: 1.4,
                             ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 40),
-                    
-                    // Alerts Section
+                    const Divider(),
+                    const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
+                        const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               'ALERTS',
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.5,
-                                color: Color(0xFF57413F),
+                                color: Color(0xFF8A7171),
                               ),
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Allow Notifications',
+                              'Notifications',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF1B1D0E),
+                                color: Color(0xFF370002),
                               ),
                             ),
                           ],
@@ -160,44 +187,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                     const SizedBox(height: 48),
-                    
-                    // Update Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.save_outlined),
-                        label: const Text('Update changes'),
+                        onPressed: _saveSettings,
+                        icon: const Icon(Icons.check_circle_outline),
+                        label: const Text('SAVE CHANGES'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF5E0006),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 18),
-                          textStyle: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
+                          elevation: 0,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              // Bottom decorative image
-              Opacity(
-                opacity: 0.1,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuCJcvo4Bbn7W3mrp-qIdcxO4eAm6G3JOJGki_IQb2UHkl6TFn4Cr2GtYkN7AJZ_iKOy8vAkVg5Yly4cutArEcCd1MUGvemf2-EYp5H15TcMAcb1LjyQ8urI723yaHABGo4E7JPmj41ucVA5aLj1RIiTEa-oh_Pvlnr4tYZIf2SGcFx-CRxeN3NXwekt_5-3WudvBMxzDa69f0SSyP6MH8EoCk-_nzRKPboOOQjj5aPgFvFRNR_BXwYgJGIVeWhVj2hCg6VisT3dfa4',
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+              const SizedBox(height: 32),
+              const Text(
+                'App Version 1.0.0',
+                style: TextStyle(color: Color(0xFF8A7171), fontSize: 12),
               ),
             ],
           ),

@@ -22,6 +22,13 @@ class _NewsScreenState extends State<NewsScreen> {
     _newsFuture = AppRepository.instance.getNews();
   }
 
+  Future<void> _refreshNews() async {
+    setState(() {
+      _newsFuture = AppRepository.instance.getNews();
+    });
+    await _newsFuture;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +53,9 @@ class _NewsScreenState extends State<NewsScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                // Translation logic removed as per request
+              },
               style: TextButton.styleFrom(
                 backgroundColor: Colors.white.withOpacity(0.1),
                 side: BorderSide(color: Colors.white.withOpacity(0.2)),
@@ -56,119 +65,133 @@ class _NewsScreenState extends State<NewsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
               ),
               child: const Text(
-                'EN/KN',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                'EN/ಕನ್ನಡ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
               ),
             ),
           ),
         ],
       ),
       drawer: const AppSidebar(),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        children: [
-          const Text(
-            'OFFICIAL UPDATES',
-            style: TextStyle(
-              fontSize: 12,
-              letterSpacing: 1.5,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF653D1E),
+      body: RefreshIndicator(
+        onRefresh: _refreshNews,
+        color: const Color(0xFFBC0006),
+        backgroundColor: Colors.white,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            const Text(
+              'OFFICIAL UPDATES',
+              style: TextStyle(
+                fontSize: 12,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF653D1E),
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Latest Village\nAnnouncements',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w900,
-              color: Color(0xFF370002),
-              height: 1.1,
+            const SizedBox(height: 8),
+            const Text(
+              'Latest Village\nAnnouncements',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF370002),
+                height: 1.1,
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            height: 4,
-            width: 80,
-            decoration: BoxDecoration(
-              color: const Color(0xFFBC0006),
-              borderRadius: BorderRadius.circular(2),
+            const SizedBox(height: 12),
+            Container(
+              height: 4,
+              width: 80,
+              decoration: BoxDecoration(
+                color: const Color(0xFFBC0006),
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          const SizedBox(height: 32),
-          FutureBuilder<List<News>>(
-            future: _newsFuture,
-            builder: (BuildContext context, AsyncSnapshot<List<News>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 48),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-
-              if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Unable to load updates.\n${snapshot.error}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Color(0xFF5E0006)),
-                      ),
-                      const SizedBox(height: 12),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _newsFuture = AppRepository.instance.getNews();
-                          });
-                        },
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              final List<News> items = snapshot.data ?? <News>[];
-              if (items.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Text(
-                    'No announcements available.',
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              }
-
-              return Column(
-                children: items.map((News item) {
-                  final String imageUrl = item.headerImageUrl.isNotEmpty
-                      ? item.headerImageUrl
-                      : (item.images.isNotEmpty ? item.images.first : '');
-                  return AnnouncementCard(
-                    contentId: item.id,
-                    category: item.category,
-                    title: item.title,
-                    kannadaTitle: item.description,
-                    imageUrl: imageUrl,
-                    likes: item.likeCount.toString(),
-                    initialIsLiked: item.isLiked,
-                    shareUrl: '${AppConfig.shareBaseUrl}/news/${item.id}',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<NewsDetailsScreen>(
-                          builder: (BuildContext context) => NewsDetailsScreen(news: item),
-                        ),
-                      );
-                    },
+            const SizedBox(height: 32),
+            FutureBuilder<List<News>>(
+              future: _newsFuture,
+              builder: (BuildContext context, AsyncSnapshot<List<News>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 48),
+                    child: Center(child: CircularProgressIndicator()),
                   );
-                }).toList(),
-              );
-            },
-          ),
-        ],
+                }
+
+                if (snapshot.hasError) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Unable to load updates.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Color(0xFF5E0006)),
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _newsFuture = AppRepository.instance.getNews();
+                            });
+                          },
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                final List<News> items = snapshot.data ?? <News>[];
+                if (items.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Text(
+                      'No announcements available.',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: items.map((News item) {
+                    final String imageUrl = item.headerImageUrl.isNotEmpty
+                        ? item.headerImageUrl
+                        : (item.images.isNotEmpty ? item.images.first : '');
+                    return AnnouncementCard(
+                      contentId: item.id,
+                      category: item.category,
+                      title: item.title,
+                      description: item.description,
+                      imageUrl: imageUrl,
+                      likes: item.likeCount.toString(),
+                      initialIsLiked: item.isLiked,
+                      shareUrl: '${AppConfig.shareBaseUrl}/news/${item.id}',
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute<NewsDetailsScreen>(
+                            builder: (BuildContext context) => NewsDetailsScreen(news: item),
+                          ),
+                        );
+                        // Refresh news list when returning from details
+                        setState(() {
+                          _newsFuture = AppRepository.instance.getNews();
+                        });
+                      },
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

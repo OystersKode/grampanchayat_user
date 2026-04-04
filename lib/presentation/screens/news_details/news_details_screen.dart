@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_markdown/flutter_markdown.dart';
+import '../../../core/services/settings_service.dart';
 import '../../../core/config/app_config.dart';
 import '../../../data/models/news_model.dart';
 import '../../../data/repositories/app_repository.dart';
@@ -46,6 +47,32 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: TextButton(
+              onPressed: () {
+                // Placeholder
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.1),
+                side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+              ),
+              child: const Text(
+                'EN/ಕನ್ನಡ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: FutureBuilder<News>(
         future: _detailsFuture,
@@ -136,31 +163,57 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                       initialIsLiked: item.isLiked,
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      item.description,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        height: 1.5,
-                        color: Color(0xFF57413F),
-                      ),
-                    ),
-                    if (item.images.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Related Images',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        height: 160,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: item.images.map((String url) {
-                            return _buildRelatedImage(url);
-                          }).toList(),
+                    MarkdownBody(
+                      data: item.description,
+                      styleSheet: MarkdownStyleSheet(
+                        p: const TextStyle(
+                          fontSize: 16,
+                          height: 1.5,
+                          color: Color(0xFF57413F),
+                        ),
+                        h1: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF370002),
+                        ),
+                        h2: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF370002),
+                        ),
+                        strong: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF370002),
+                        ),
+                        em: const TextStyle(
+                          fontStyle: FontStyle.italic,
+                        ),
+                        listBullet: const TextStyle(
+                          color: Color(0xFFBC0006),
                         ),
                       ),
-                    ],
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Related Images',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF370002),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 180,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: item.images.length,
+                        itemBuilder: (context, index) {
+                          return _buildRelatedImage(item.images[index]);
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
