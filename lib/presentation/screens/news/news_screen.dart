@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../data/models/news_model.dart';
 import '../../../data/repositories/app_repository.dart';
+import '../../../core/config/app_config.dart';
 import '../../widgets/announcement_card.dart';
 import '../../widgets/sidebar.dart';
 import '../news_details/news_details_screen.dart';
@@ -146,11 +147,14 @@ class _NewsScreenState extends State<NewsScreen> {
                       ? item.headerImageUrl
                       : (item.images.isNotEmpty ? item.images.first : '');
                   return AnnouncementCard(
+                    contentId: item.id,
                     category: item.category,
                     title: item.title,
                     kannadaTitle: item.description,
                     imageUrl: imageUrl,
                     likes: item.likeCount.toString(),
+                    initialIsLiked: item.isLiked,
+                    shareUrl: '${AppConfig.shareBaseUrl}/news/${item.id}',
                     onTap: () {
                       Navigator.push(
                         context,

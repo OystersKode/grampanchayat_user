@@ -8,5 +8,8 @@ class AppConfig {
     defaultValue: 'http://10.0.2.2:5000',
   );
 
+  // Link for sharing news (e.g. your web portal)
+  static const String shareBaseUrl = 'https://kagwad-portal.web.app';
+
   static String get apiV1BaseUrl => '$apiBaseUrl/api/v1';
 }

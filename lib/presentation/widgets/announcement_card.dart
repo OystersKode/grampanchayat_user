@@ -1,24 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../data/repositories/app_repository.dart';
 
-class AnnouncementCard extends StatelessWidget {
+class AnnouncementCard extends StatefulWidget {
+  final String contentId;
   final String category;
   final Color? categoryColor;
   final String title;
   final String kannadaTitle;
   final String imageUrl;
   final String likes;
+  final bool initialIsLiked;
+  final String shareUrl;
   final VoidCallback? onTap;
 
   const AnnouncementCard({
     super.key,
+    required this.contentId,
     required this.category,
     this.categoryColor,
     required this.title,
     required this.kannadaTitle,
     required this.imageUrl,
     required this.likes,
+    this.initialIsLiked = false,
+    required this.shareUrl,
     this.onTap,
   });
+
+  @override
+  State<AnnouncementCard> createState() => _AnnouncementCardState();
+}
+
+class _AnnouncementCardState extends State<AnnouncementCard> {
+  late int _likeCount;
+  bool _isLiked = false;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _likeCount = int.tryParse(widget.likes) ?? 0;
+    _isLiked = widget.initialIsLiked;
+  }
+
+  Future<void> _handleLike() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final success = await AppRepository.instance.toggleLike(
+        contentId: widget.contentId,
+        contentType: 'news',
+      );
+
+      if (success) {
+        setState(() {
+          if (_isLiked) {
+            _likeCount--;
+            _isLiked = false;
+          } else {
+            _likeCount++;
+            _isLiked = true;
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _handleShare() {
+    Share.share(
+      'Check out this news from Kagwad Panchayat: ${widget.title}\n\n'
+      'View more: ${widget.shareUrl}',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +107,14 @@ class AnnouncementCard extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: onTap,
+        onTap: widget.onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Stack(
               children: [
                 Image.network(
-                  imageUrl,
+                  widget.imageUrl,
                   height: 240,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -79,11 +149,11 @@ class AnnouncementCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: categoryColor ?? const Color(0xFFBC0006),
+                          color: widget.categoryColor ?? const Color(0xFFBC0006),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          category,
+                          widget.category,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -94,7 +164,7 @@ class AnnouncementCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        title,
+                        widget.title,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
@@ -104,7 +174,7 @@ class AnnouncementCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        kannadaTitle,
+                        widget.kannadaTitle,
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 18,
@@ -121,34 +191,44 @@ class AnnouncementCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Row(
                 children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.favorite, color: Color(0xFF5E0006), size: 22),
-                      const SizedBox(width: 8),
-                      Text(
-                        likes,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF241A06),
+                  GestureDetector(
+                    onTap: _handleLike,
+                    child: Row(
+                      children: [
+                        Icon(
+                          _isLiked ? Icons.favorite : Icons.favorite_border,
+                          color: const Color(0xFF5E0006),
+                          size: 22,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        Text(
+                          _likeCount.toString(),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF241A06),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(width: 32),
-                  Row(
-                    children: [
-                      const Icon(Icons.share_outlined, color: Color(0xFFBC0006), size: 20),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Share on WhatsApp',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFBC0006),
+                  GestureDetector(
+                    onTap: _handleShare,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.share_outlined, color: Color(0xFFBC0006), size: 20),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Share',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFBC0006),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),

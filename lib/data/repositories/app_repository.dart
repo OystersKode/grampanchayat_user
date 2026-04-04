@@ -1,4 +1,5 @@
 import '../models/news_model.dart';
+import '../models/wish_model.dart';
 import '../../core/config/app_config.dart';
 import '../../core/network/api_client.dart';
 import '../services/guest_session_service.dart';
@@ -61,5 +62,35 @@ class AppRepository {
         'address': address,
       },
     );
+  }
+
+  Future<bool> toggleLike({
+    required String contentId,
+    required String contentType,
+  }) async {
+    final String token = await _guestSessionService.getOrCreateToken();
+    final Map<String, dynamic> response = await _apiClient.post(
+      '/likes',
+      bearerToken: token,
+      body: <String, dynamic>{
+        'content_id': contentId,
+        'content_type': contentType,
+      },
+    );
+    return response['success'] == true;
+  }
+
+  Future<List<Wish>> getWishes() async {
+    final String token = await _guestSessionService.getOrCreateToken();
+    final Map<String, dynamic> response = await _apiClient.get(
+      '/wishes',
+      bearerToken: token,
+    );
+
+    final List<dynamic> rawData = (response['data'] as List<dynamic>?) ?? <dynamic>[];
+    return rawData
+        .whereType<Map<String, dynamic>>()
+        .map(Wish.fromJson)
+        .toList();
   }
 }

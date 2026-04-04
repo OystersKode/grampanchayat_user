@@ -7,6 +7,7 @@ class News {
   final String category;
   final String date;
   final int likeCount;
+  final bool isLiked;
 
   News({
     required this.id,
@@ -17,6 +18,7 @@ class News {
     required this.category,
     required this.date,
     required this.likeCount,
+    required this.isLiked,
   });
 
   factory News.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,7 @@ class News {
       category: ((json['category'] as String?) ?? 'Updates').toUpperCase(),
       date: _formatDate(json['created_at'] as String?),
       likeCount: _parseLikeCount(json['like_count']),
+      isLiked: json['is_liked'] == 1 || json['is_liked'] == true,
     );
   }
 
