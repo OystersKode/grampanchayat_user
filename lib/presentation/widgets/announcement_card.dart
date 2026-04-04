@@ -215,7 +215,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        widget.description,
+                        _stripMarkdown(widget.description),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -281,5 +281,16 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
         ),
       ),
     );
+  }
+
+  String _stripMarkdown(String text) {
+    // Basic regex to remove common markdown symbols for the card preview
+    return text
+        .replaceAll(RegExp(r'\*\*|__'), '') // Bold
+        .replaceAll(RegExp(r'\*|_'), '')    // Italic
+        .replaceAll(RegExp(r'#+\s'), '')    // Headers
+        .replaceAll(RegExp(r'\[(.*?)\]\(.*?\)'), r'$1') // Links
+        .replaceAll(RegExp(r'!\[.*?\]\(.*?\)'), '') // Images
+        .trim();
   }
 }
