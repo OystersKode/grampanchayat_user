@@ -128,12 +128,33 @@ class AppRepository {
     return News.fromJson(data);
   }
 
+  Future<bool> hasSubmittedRequest() async {
+    final String? uid = _auth.currentUser?.uid;
+    if (uid == null) return false;
+
+    final querySnapshot = await _firestore
+        .collection('member_requests')
+        .where('user_uid', isEqualTo: uid)
+        .limit(1)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
   Future<void> submitMemberRequest({
     required String name,
     required String mobileNumber,
     required String address,
   }) async {
     final String? uid = _auth.currentUser?.uid;
+    if (uid == null) throw Exception('User not authenticated');
+
+    // Check if already submitted
+    final alreadySubmitted = await hasSubmittedRequest();
+    if (alreadySubmitted) {
+      throw Exception('You have already submitted a membership request.');
+    }
+
     await _firestore.collection('member_requests').add({
       'user_uid': uid,
       'name': name,

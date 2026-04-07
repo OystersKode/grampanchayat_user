@@ -7,24 +7,30 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // NEWS & WISHES: Anyone can read, logged-in users can update (for likes)
+    // NEWS: Anyone can read, logged-in users can update (for like_count)
     match /news/{id} {
       allow read: if true;
       allow update: if isAuthenticated();
+
+      // Images subcollection
+      match /images/{imageId} {
+        allow read: if true;
+      }
     }
 
+    // WISHES: Anyone can read, logged-in users can update
     match /wishes/{id} {
       allow read: if true;
       allow update: if isAuthenticated();
     }
 
-    // LIKES: Logged-in users can manage their own likes
+    // LIKES: Logged-in users can manage likes
     match /likes/{id} {
       allow read: if true;
       allow create, delete: if isAuthenticated();
     }
 
-    // GUEST USERS: Created during first login
+    // GUEST USERS: Users can manage their own profile
     match /guest_users/{uid} {
       allow read, write: if isAuthenticated() && request.auth.uid == uid;
     }
