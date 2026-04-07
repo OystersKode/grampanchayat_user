@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../routes/app_routes.dart';
+import '../../services/auth_service.dart';
 
 class AppSidebar extends StatelessWidget {
   const AppSidebar({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authService = AuthService();
+    final user = authService.currentUser;
+
     return Drawer(
       backgroundColor: const Color(0xFFFFF8F3),
       child: Column(
@@ -14,13 +18,13 @@ class AppSidebar extends StatelessWidget {
             decoration: const BoxDecoration(
               color: Color(0xFF5E0006),
             ),
-            child: const Center(
+            child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.account_balance, size: 48, color: Colors.white),
-                  SizedBox(height: 12),
-                  Text(
+                  const Icon(Icons.account_balance, size: 48, color: Colors.white),
+                  const SizedBox(height: 12),
+                  const Text(
                     'Panchayat Portal',
                     style: TextStyle(
                       color: Colors.white,
@@ -28,6 +32,14 @@ class AppSidebar extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  if (user != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        user.isAnonymous ? 'Guest' : (user.email ?? ''),
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -59,6 +71,22 @@ class AppSidebar extends StatelessWidget {
                   icon: Icons.settings_outlined,
                   title: 'Settings',
                   route: AppRoutes.settings,
+                ),
+                const Divider(),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.logout,
+                  title: 'Logout',
+                  onTap: () async {
+                    await authService.logout();
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        AppRoutes.login,
+                        (route) => false,
+                      );
+                    }
+                  },
                 ),
               ],
             ),

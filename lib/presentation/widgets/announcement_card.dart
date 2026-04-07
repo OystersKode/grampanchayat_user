@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import '../../core/utils/share_utils.dart';
 import '../../data/repositories/app_repository.dart';
 
 class AnnouncementCard extends StatefulWidget {
@@ -102,9 +103,10 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
     setState(() => _isLoading = true);
 
     try {
-      final String text = '*${widget.title}*\n\n'
-          '${widget.description.length > 200 ? widget.description.substring(0, 200) + "..." : widget.description}\n\n'
-          '📍 *Village Details:* Kagwad Gram Panchayat';
+      final String text = ShareUtils.formatNewsForWhatsApp(
+        title: widget.title,
+        description: widget.description,
+      );
 
       if (widget.imageUrl.isNotEmpty) {
         final response = await http.get(Uri.parse(widget.imageUrl));

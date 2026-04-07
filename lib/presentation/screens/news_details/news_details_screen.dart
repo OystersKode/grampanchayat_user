@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../../core/services/settings_service.dart';
 import '../../../core/config/app_config.dart';
+import '../../../core/utils/share_utils.dart';
 import '../../../data/models/news_model.dart';
 import '../../../data/repositories/app_repository.dart';
 import '../../widgets/like_share_buttons.dart';
@@ -155,9 +156,10 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                     LikeShareButtons(
                       contentId: item.id,
                       contentType: 'news',
-                      shareText: '*${item.title}*\n\n'
-                          '${item.description.length > 200 ? item.description.substring(0, 200) + "..." : item.description}\n\n'
-                          '📍 *Village Details:* Kagwad Gram Panchayat',
+                      shareText: ShareUtils.formatNewsForWhatsApp(
+                        title: item.title,
+                        description: item.description,
+                      ),
                       imageUrl: heroImage,
                       initialLikes: item.likeCount,
                       initialIsLiked: item.isLiked,

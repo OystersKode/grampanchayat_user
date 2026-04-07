@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import '../../../core/services/settings_service.dart';
+import '../../../core/utils/share_utils.dart';
 import '../../../data/models/wish_model.dart';
 import '../../../data/repositories/app_repository.dart';
 import '../../widgets/like_share_buttons.dart';
@@ -166,8 +167,10 @@ class _WishCardState extends State<WishCard> {
     setState(() => _isSharing = true);
 
     try {
-      final String text = '*${widget.wish.title}*\n\n${widget.wish.content}\n\n'
-          '✨ *From:* Kagwad Gram Panchayat';
+      final String text = ShareUtils.formatWishForWhatsApp(
+        title: widget.wish.title,
+        content: widget.wish.content,
+      );
 
       if (widget.wish.headerImageUrl.isNotEmpty) {
         final response = await http.get(Uri.parse(widget.wish.headerImageUrl));
@@ -273,8 +276,10 @@ class _WishCardState extends State<WishCard> {
                 LikeShareButtons(
                   contentId: widget.wish.id,
                   contentType: 'wish',
-                  shareText: '*${widget.wish.title}*\n\n${widget.wish.content}\n\n'
-                      '✨ *From:* Kagwad Gram Panchayat',
+                  shareText: ShareUtils.formatWishForWhatsApp(
+                    title: widget.wish.title,
+                    content: widget.wish.content,
+                  ),
                   imageUrl: widget.wish.headerImageUrl,
                   initialLikes: widget.wish.likeCount,
                   initialIsLiked: widget.wish.isLiked,

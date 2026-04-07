@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import '../../core/utils/share_utils.dart';
 import '../../data/repositories/app_repository.dart';
 
 class LikeShareButtons extends StatefulWidget {
@@ -82,7 +83,7 @@ class _LikeShareButtonsState extends State<LikeShareButtons> {
     setState(() => _isLoading = true);
 
     try {
-      final String text = widget.shareText;
+      final String text = ShareUtils.formatForWhatsApp(widget.shareText);
 
       if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty) {
         // 1. Download image

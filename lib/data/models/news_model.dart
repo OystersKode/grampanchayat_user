@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class News {
   final String id;
   final String title;
@@ -38,7 +40,7 @@ class News {
         return '';
       }).where((String item) => item.isNotEmpty).toList(),
       category: ((json['category'] as String?) ?? 'Updates').toUpperCase(),
-      date: _formatDate(json['created_at'] as String?),
+      date: _formatDate(json['created_at']),
       likeCount: _parseLikeCount(json['like_count']),
       isLiked: json['is_liked'] == 1 || json['is_liked'] == true,
     );
@@ -54,14 +56,20 @@ class News {
     return 0;
   }
 
-  static String _formatDate(String? value) {
-    if (value == null || value.isEmpty) {
+  static String _formatDate(Object? value) {
+    if (value == null) {
       return '';
     }
 
-    final DateTime? parsed = DateTime.tryParse(value);
+    DateTime? parsed;
+    if (value is Timestamp) {
+      parsed = value.toDate();
+    } else if (value is String) {
+      parsed = DateTime.tryParse(value);
+    }
+
     if (parsed == null) {
-      return value;
+      return value.toString();
     }
 
     final String day = parsed.day.toString().padLeft(2, '0');

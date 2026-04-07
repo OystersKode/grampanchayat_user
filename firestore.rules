@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper to check if user is logged in (including Guest/Anonymous)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // NEWS & WISHES: Anyone can read, logged-in users can update (for likes)
+    match /news/{id} {
+      allow read: if true;
+      allow update: if isAuthenticated();
+    }
+
+    match /wishes/{id} {
+      allow read: if true;
+      allow update: if isAuthenticated();
+    }
+
+    // LIKES: Logged-in users can manage their own likes
+    match /likes/{id} {
+      allow read: if true;
+      allow create, delete: if isAuthenticated();
+    }
+
+    // GUEST USERS: Created during first login
+    match /guest_users/{uid} {
+      allow read, write: if isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // MEMBER REQUESTS
+    match /member_requests/{id} {
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && resource.data.user_uid == request.auth.uid;
+    }
+  }
+}

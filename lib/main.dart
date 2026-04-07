@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 import 'core/services/settings_service.dart';
 import 'data/repositories/app_repository.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
+import 'services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await SettingsService.initialize();
   AppRepository.initialize();
+
+  // Handle Anonymous Auth for Guest Users
+  final authService = AuthService();
+  try {
+    if (authService.currentUser == null) {
+      await authService.signInGuest();
+    }
+  } catch (e) {
+    debugPrint("Auth initialization skipped or failed: $e");
+    // App will continue, features like 'Like' will retry auth or show errors when used.
+  }
+
   runApp(const GramPanchayatApp());
 }
 
@@ -35,6 +54,7 @@ class GramPanchayatApp extends StatelessWidget {
               child: child!,
             );
           },
+          // Changed initial route to news as users are auto-authenticated
           initialRoute: AppRoutes.news,
           routes: AppRoutes.routes,
         );
