@@ -302,6 +302,7 @@ class _NewsScreenState extends State<NewsScreen> {
         return AnnouncementCard(
           contentId: item.id,
           category: item.category,
+          categoryColor: item.categoryColor,
           title: item.title,
           description: item.description,
           imageUrl: imageUrl,

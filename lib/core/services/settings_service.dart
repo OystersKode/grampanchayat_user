@@ -21,6 +21,12 @@ class SettingsService extends ChangeNotifier {
 
   double get fontSize => _prefs.getDouble('font_size') ?? 16.0;
   bool get notificationsEnabled => _prefs.getBool('notifications_enabled') ?? true;
+  bool get onboardingComplete => _prefs.getBool('onboarding_complete') ?? false;
+
+  Future<void> setOnboardingComplete() async {
+    await _prefs.setBool('onboarding_complete', true);
+    notifyListeners();
+  }
 
   Future<void> setFontSize(double size) async {
     await _prefs.setDouble('font_size', size);

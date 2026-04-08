@@ -24,7 +24,15 @@ class News {
   });
 
   factory News.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> rawImages = (json['images'] as List<dynamic>?) ?? <dynamic>[];
+    // Priority 1: related_image_urls (from Admin App)
+    // Priority 2: images (from legacy/subcollection implementation)
+    final List<dynamic> rawImages = (json['related_image_urls'] as List<dynamic>?) ?? 
+                                   (json['images'] as List<dynamic>?) ?? 
+                                   <dynamic>[];
+    
+    // Get the category string
+    final String categoryStr = (json['category'] as String?) ?? 'Updates';
+
     return News(
       id: (json['id'] as String?) ?? '',
       title: (json['title'] as String?) ?? '',
@@ -39,11 +47,22 @@ class News {
         }
         return '';
       }).where((String item) => item.isNotEmpty).toList(),
-      category: ((json['category'] as String?) ?? 'Updates').toUpperCase(),
+      category: categoryStr.toUpperCase(),
       date: _formatDate(json['created_at']),
       likeCount: _parseLikeCount(json['like_count']),
       isLiked: json['is_liked'] == 1 || json['is_liked'] == true,
     );
+  }
+
+  // Helper to get color based on category name
+  Color get categoryColor {
+    final String cat = category.toLowerCase();
+    if (cat.contains('health') || cat.contains('ಆರೋಗ್ಯ')) return const Color(0xFF2E7D32); // Green
+    if (cat.contains('agri') || cat.contains('ಕೃಷಿ')) return const Color(0xFFEF6C00); // Orange
+    if (cat.contains('road') || cat.contains('ರಸ್ತೆ') || cat.contains('infra')) return const Color(0xFF1565C0); // Blue
+    if (cat.contains('edu') || cat.contains('ಶಿಕ್ಷಣ')) return const Color(0xFF6A1B9A); // Purple
+    if (cat.contains('fest') || cat.contains('ಹಬ್ಬ')) return const Color(0xFFC62828); // Red
+    return const Color(0xFFBC0006); // Default Deep Red
   }
 
   static int _parseLikeCount(Object? value) {

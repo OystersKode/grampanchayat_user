@@ -44,7 +44,7 @@ class GramPanchayatApp extends StatelessWidget {
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: "Gram Panchayat Portal",
+          title: "Kagwad.in",
           theme: AppTheme.lightTheme,
           builder: (context, child) {
             return MediaQuery(
@@ -54,8 +54,10 @@ class GramPanchayatApp extends StatelessWidget {
               child: child!,
             );
           },
-          // Changed initial route to news as users are auto-authenticated
-          initialRoute: AppRoutes.news,
+          // Show onboarding if not complete, otherwise go to news
+          initialRoute: SettingsService.instance.onboardingComplete 
+              ? AppRoutes.news 
+              : AppRoutes.onboarding,
           routes: AppRoutes.routes,
         );
       },

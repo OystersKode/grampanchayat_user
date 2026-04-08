@@ -68,8 +68,11 @@ class AppRepository {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['id'] = doc.id;
       
-      final imagesSnapshot = await doc.reference.collection('images').get();
-      data['images'] = imagesSnapshot.docs.map((d) => d.data()['image_url']).toList();
+      // Keep legacy support for subcollection images if they exist
+      if (data['related_image_urls'] == null) {
+        final imagesSnapshot = await doc.reference.collection('images').get();
+        data['images'] = imagesSnapshot.docs.map((d) => d.data()['image_url']).toList();
+      }
       
       if (uid != null) {
         final likeQuery = await _firestore
