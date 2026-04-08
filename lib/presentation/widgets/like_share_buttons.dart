@@ -29,8 +29,8 @@ class LikeShareButtons extends StatefulWidget {
 }
 
 class _LikeShareButtonsState extends State<LikeShareButtons> {
+  late bool _isLiked;
   late int _likeCount;
-  bool _isLiked = false;
   bool _isLoading = false;
 
   @override
@@ -43,38 +43,38 @@ class _LikeShareButtonsState extends State<LikeShareButtons> {
   Future<void> _handleLike() async {
     if (_isLoading) return;
 
+    // Optimistic Update
+    final previousIsLiked = _isLiked;
+    final previousLikeCount = _likeCount;
+
     setState(() {
+      if (_isLiked) {
+        _likeCount--;
+        _isLiked = false;
+      } else {
+        _likeCount++;
+        _isLiked = true;
+      }
       _isLoading = true;
     });
 
     try {
-      final success = await AppRepository.instance.toggleLike(
+      await AppRepository.instance.toggleLike(
         contentId: widget.contentId,
         contentType: widget.contentType,
       );
-
-      if (success) {
-        setState(() {
-          if (_isLiked) {
-            _likeCount--;
-            _isLiked = false;
-          } else {
-            _likeCount++;
-            _isLiked = true;
-          }
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     } catch (e) {
+      // Revert on failure
       if (mounted) {
+        setState(() {
+          _isLiked = previousIsLiked;
+          _likeCount = previousLikeCount;
+          _isLoading = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.toString()}')),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
@@ -117,33 +117,70 @@ class _LikeShareButtonsState extends State<LikeShareButtons> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF5E0006),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+        // Increased touch target for Like button
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _handleLike,
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF5E0006),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _isLiked ? Icons.favorite : Icons.favorite_border,
+                    size: 24, // Slightly larger icon
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _likeCount.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          onPressed: _handleLike,
-          icon: Icon(
-            _isLiked ? Icons.favorite : Icons.favorite_border,
-            size: 20,
-          ),
-          label: Text(_likeCount.toString()),
         ),
         const SizedBox(width: 12),
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF5E0006),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+        // Increased touch target for Share button
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _handleShare,
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF5E0006),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.share, size: 22, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Share",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          onPressed: _handleShare,
-          icon: const Icon(Icons.share, size: 20),
-          label: const Text("Share"),
         ),
       ],
     );

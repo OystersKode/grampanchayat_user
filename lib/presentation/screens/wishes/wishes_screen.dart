@@ -275,7 +275,7 @@ class _WishCardState extends State<WishCard> {
                 const SizedBox(height: 16),
                 LikeShareButtons(
                   contentId: widget.wish.id,
-                  contentType: 'wish',
+                  contentType: 'wishes',
                   shareText: ShareUtils.formatWishForWhatsApp(
                     title: widget.wish.title,
                     content: widget.wish.content,

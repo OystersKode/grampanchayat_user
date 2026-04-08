@@ -62,44 +62,48 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
   Future<void> _handleLike() async {
     if (_isLoading) return;
 
+    // Optimistic Update: Update UI immediately
+    final previousIsLiked = _isLiked;
+    final previousLikeCount = _likeCount;
+
     setState(() {
+      if (_isLiked) {
+        _likeCount--;
+        _isLiked = false;
+      } else {
+        _likeCount++;
+        _isLiked = true;
+      }
       _isLoading = true;
     });
 
     try {
-      final success = await AppRepository.instance.toggleLike(
+      await AppRepository.instance.toggleLike(
         contentId: widget.contentId,
         contentType: 'news',
       );
-
-      if (success) {
-        setState(() {
-          if (_isLiked) {
-            _likeCount--;
-            _isLiked = false;
-          } else {
-            _likeCount++;
-            _isLiked = true;
-          }
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
-      }
-    } finally {
+      // Success, just clear loading state
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
+    } catch (e) {
+      // Revert on error
+      if (mounted) {
+        setState(() {
+          _isLiked = previousIsLiked;
+          _likeCount = previousLikeCount;
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
     }
   }
 
   Future<void> _handleShare() async {
-    if (_isLoading) return;
     setState(() => _isLoading = true);
 
     try {
@@ -147,12 +151,12 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
         ],
       ),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: widget.onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InkWell(
+            onTap: widget.onTap,
+            child: Stack(
               children: [
                 Image.network(
                   widget.imageUrl,
@@ -232,55 +236,73 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                 ),
               ],
             ),
-            Container(
-              color: const Color(0xFFFFF2E1),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Row(
-                children: [
-                  GestureDetector(
+          ),
+          Container(
+            color: const Color(0xFFFFF2E1),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              children: [
+                // LIKE BUTTON
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
                     onTap: _handleLike,
-                    child: Row(
-                      children: [
-                        Icon(
-                          _isLiked ? Icons.favorite : Icons.favorite_border,
-                          color: const Color(0xFF5E0006),
-                          size: 22,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _likeCount.toString(),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF241A06),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _isLiked ? Icons.favorite : Icons.favorite_border,
+                            color: const Color(0xFF5E0006),
+                            size: 24,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 10),
+                          Text(
+                            _likeCount.toString(),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF241A06),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 32),
-                  GestureDetector(
+                ),
+                const SizedBox(width: 12),
+                // SHARE BUTTON
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
                     onTap: _handleShare,
-                    child: Row(
-                      children: [
-                        const Icon(Icons.share_outlined, color: Color(0xFFBC0006), size: 20),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Share',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFBC0006),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.share_outlined, color: Color(0xFFBC0006), size: 22),
+                          SizedBox(width: 10),
+                          Text(
+                            'Share',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFBC0006),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
