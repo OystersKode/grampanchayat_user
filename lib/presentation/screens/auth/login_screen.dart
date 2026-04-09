@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../services/auth_service.dart';
 import '../../../routes/app_routes.dart';
 
@@ -54,10 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.white,
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Gram Panchayat\nPortal',
+              Text(
+                'app_title'.tr(context),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -79,9 +80,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(28),
                       ),
                     ),
-                    child: const Text(
-                      'Get Started',
-                      style: TextStyle(
+                    child: Text(
+                      'get_started'.tr(context),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

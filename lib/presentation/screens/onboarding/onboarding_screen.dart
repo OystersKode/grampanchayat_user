@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../core/services/settings_service.dart';
 import '../../../routes/app_routes.dart';
 
@@ -13,28 +14,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<OnboardingData> _pages = [
+  List<OnboardingData> get _pages => [
     OnboardingData(
-      title: 'Welcome to Kagwad.in',
-      description: 'Your digital gateway to stay connected with everything happening in Kagwad Panchayat.',
+      title: 'welcome_title'.tr(context),
+      description: 'welcome_desc'.tr(context),
       icon: Icons.home_work_outlined,
       color: const Color(0xFF5E0006),
     ),
     OnboardingData(
-      title: 'Latest News & Updates',
-      description: 'Get real-time announcements about village development, health camps, and local events.',
+      title: 'news_title'.tr(context),
+      description: 'news_desc'.tr(context),
       icon: Icons.newspaper_outlined,
       color: const Color(0xFFBC0006),
     ),
     OnboardingData(
-      title: 'Village Wishes',
-      description: 'Celebrate festivals and milestones together. Share and like community spirit posts.',
+      title: 'wishes_title'.tr(context),
+      description: 'wishes_desc_onboarding'.tr(context),
       icon: Icons.auto_awesome_outlined,
       color: const Color(0xFF653D1E),
     ),
     OnboardingData(
-      title: 'Digital Services',
-      description: 'Apply for memberships and access panchayat services directly from your mobile.',
+      title: 'services_title'.tr(context),
+      description: 'services_desc'.tr(context),
       icon: Icons.app_registration_outlined,
       color: const Color(0xFF241A06),
     ),
@@ -102,7 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       elevation: 0,
                     ),
                     child: Text(
-                      _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                      _currentPage == _pages.length - 1 ? 'get_started'.tr(context) : 'next'.tr(context),
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -114,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   TextButton(
                     onPressed: _onFinish,
                     child: Text(
-                      'Skip',
+                      'skip'.tr(context),
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 16,

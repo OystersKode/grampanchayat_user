@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../core/services/settings_service.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -25,9 +26,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Settings updated successfully'),
-          backgroundColor: Color(0xFF5E0006),
+        SnackBar(
+          content: Text('settings_updated'.tr(context)),
+          backgroundColor: const Color(0xFF5E0006),
         ),
       );
     }
@@ -44,9 +45,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(
+        title: Text(
+          'settings'.tr(context),
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -74,9 +75,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'ACCESSIBILITY',
-                      style: TextStyle(
+                    Text(
+                      'accessibility'.tr(context),
+                      style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2.0,
@@ -84,9 +85,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Font Size',
-                      style: TextStyle(
+                    Text(
+                      'font_size'.tr(context),
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF370002),
@@ -125,9 +126,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'PREVIEW',
-                            style: TextStyle(
+                          Text(
+                            'preview'.tr(context),
+                            style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.5,
@@ -136,7 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Kagwad Gram Panchayat updates will look like this.',
+                            'preview_text'.tr(context),
                             style: TextStyle(
                               fontSize: _fontSize,
                               color: const Color(0xFF370002),
@@ -152,22 +153,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'ALERTS',
-                              style: TextStyle(
+                              'alerts'.tr(context),
+                              style: const TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.5,
                                 color: Color(0xFF8A7171),
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
-                              'Notifications',
-                              style: TextStyle(
+                              'notifications'.tr(context),
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF370002),
@@ -192,7 +193,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: ElevatedButton.icon(
                         onPressed: _saveSettings,
                         icon: const Icon(Icons.check_circle_outline),
-                        label: const Text('SAVE CHANGES'),
+                        label: Text('save_changes'.tr(context)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF5E0006),
                           foregroundColor: Colors.white,

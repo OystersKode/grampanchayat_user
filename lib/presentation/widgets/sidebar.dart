@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/localization/app_translations.dart';
 import '../../routes/app_routes.dart';
 import '../../services/auth_service.dart';
 
@@ -24,9 +25,9 @@ class AppSidebar extends StatelessWidget {
                 children: [
                   const Icon(Icons.account_balance, size: 48, color: Colors.white),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Panchayat Portal',
-                    style: TextStyle(
+                  Text(
+                    'panchayat_portal'.tr(context),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -36,7 +37,7 @@ class AppSidebar extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
-                        user.isAnonymous ? 'Guest' : (user.email ?? ''),
+                        user.isAnonymous ? 'guest'.tr(context) : (user.email ?? ''),
                         style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                     ),
@@ -51,32 +52,32 @@ class AppSidebar extends StatelessWidget {
                 _buildDrawerItem(
                   context,
                   icon: Icons.newspaper,
-                  title: 'News',
+                  title: 'news'.tr(context),
                   route: AppRoutes.news,
                 ),
                 _buildDrawerItem(
                   context,
                   icon: Icons.card_giftcard,
-                  title: 'Wishes',
+                  title: 'wishes'.tr(context),
                   route: AppRoutes.wishes,
                 ),
                 _buildDrawerItem(
                   context,
                   icon: Icons.person_add_alt_1_outlined,
-                  title: 'Become a Member',
+                  title: 'membership'.tr(context),
                   route: AppRoutes.membership,
                 ),
                 _buildDrawerItem(
                   context,
                   icon: Icons.settings_outlined,
-                  title: 'Settings',
+                  title: 'settings'.tr(context),
                   route: AppRoutes.settings,
                 ),
                 const Divider(),
                 _buildDrawerItem(
                   context,
                   icon: Icons.logout,
-                  title: 'Logout',
+                  title: 'logout'.tr(context),
                   onTap: () async {
                     await authService.logout();
                     if (context.mounted) {

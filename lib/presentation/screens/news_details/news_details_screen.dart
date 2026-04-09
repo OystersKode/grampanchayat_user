@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../core/services/settings_service.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/utils/share_utils.dart';
@@ -40,9 +41,9 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'News Details',
-          style: TextStyle(
+        title: Text(
+          'news_details'.tr(context),
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -53,7 +54,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
             padding: const EdgeInsets.only(right: 12.0),
             child: TextButton(
               onPressed: () {
-                // Placeholder
+                SettingsService.instance.toggleLanguage();
               },
               style: TextButton.styleFrom(
                 backgroundColor: Colors.white.withOpacity(0.1),
@@ -196,9 +197,9 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Related Images',
-                      style: TextStyle(
+                    Text(
+                      'related_images'.tr(context),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF370002),

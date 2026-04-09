@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import '../../../core/localization/app_translations.dart';
 import '../../../core/services/settings_service.dart';
 import '../../../core/utils/share_utils.dart';
 import '../../../data/models/wish_model.dart';
@@ -42,9 +43,9 @@ class _WishesScreenState extends State<WishesScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Village Wishes',
-          style: TextStyle(
+        title: Text(
+          'village_wishes'.tr(context),
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -93,8 +94,8 @@ class _WishesScreenState extends State<WishesScreen> {
             }
             final wishes = snapshot.data ?? [];
             if (wishes.isEmpty) {
-              return const Center(
-                child: Text('No wishes yet. Check back later!'),
+              return Center(
+                child: Text('no_wishes'.tr(context)),
               );
             }
 
@@ -103,37 +104,37 @@ class _WishesScreenState extends State<WishesScreen> {
               itemCount: wishes.length + 1, // +1 for the header
               itemBuilder: (context, index) {
                 if (index == 0) {
-                  return const Column(
+                  return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'COMMUNITY SPIRIT',
-                        style: TextStyle(
+                        'community_spirit'.tr(context),
+                        style: const TextStyle(
                           fontSize: 12,
                           letterSpacing: 1.5,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF653D1E),
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
-                        'Village Wishes',
-                        style: TextStyle(
+                        'village_wishes'.tr(context),
+                        style: const TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.w900,
                           color: Color(0xFF241A06),
                           height: 1.1,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
-                        'Celebrating the milestones, festivals, and achievements that bind Kagwad together.',
-                        style: TextStyle(
+                        'village_wishes_desc'.tr(context),
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Color(0xFF653D1E),
                         ),
                       ),
-                      SizedBox(height: 32),
+                      const SizedBox(height: 32),
                     ],
                   );
                 }

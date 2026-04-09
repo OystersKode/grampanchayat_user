@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../data/repositories/app_repository.dart';
 
 class MembershipScreen extends StatefulWidget {
@@ -52,17 +53,17 @@ class _MembershipScreenState extends State<MembershipScreen> {
     final String address = _addressController.text.trim();
 
     if (name.isEmpty) {
-      _showMessage('Please enter your name');
+      _showMessage('enter_name'.tr(context));
       return;
     }
 
     if (phone.isEmpty) {
-      _showMessage('Please enter your phone number');
+      _showMessage('enter_phone'.tr(context));
       return;
     }
 
     if (phone.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(phone)) {
-      _showMessage('Please enter a valid 10-digit phone number');
+      _showMessage('valid_phone'.tr(context));
       return;
     }
 
@@ -76,7 +77,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
         mobileNumber: phone,
         address: address,
       );
-      _showMessage('Request submitted successfully');
+      _showMessage('submit_success'.tr(context));
       setState(() {
         _alreadySubmitted = true;
       });
@@ -108,9 +109,9 @@ class _MembershipScreenState extends State<MembershipScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Become a member',
-          style: TextStyle(
+        title: Text(
+          'become_member'.tr(context),
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -152,19 +153,19 @@ class _MembershipScreenState extends State<MembershipScreen> {
             size: 80,
           ),
           const SizedBox(height: 24),
-          const Text(
-            'Already Submitted!',
-            style: TextStyle(
+          Text(
+            'already_submitted'.tr(context),
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Color(0xFF370002),
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Your membership request has already been received and is currently under review by the Gram Panchayat administration.',
+          Text(
+            'already_submitted_desc'.tr(context),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: Color(0xFF653D1E),
               height: 1.5,
@@ -181,7 +182,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('BACK TO HOME'),
+            child: Text('back_to_home'.tr(context)),
           ),
         ],
       ),
@@ -205,19 +206,19 @@ class _MembershipScreenState extends State<MembershipScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Membership Form',
-            style: TextStyle(
+          Text(
+            'membership_form'.tr(context),
+            style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Color(0xFF370002),
             ),
           ),
           const SizedBox(height: 40),
-          _buildFieldLabel('FULL NAME'),
+          _buildFieldLabel('full_name'.tr(context)),
           _buildTextField(Icons.person_outline, controller: _nameController),
           const SizedBox(height: 32),
-          _buildFieldLabel('PHONE NUMBER'),
+          _buildFieldLabel('phone_number'.tr(context)),
           _buildTextField(
             Icons.phone_outlined,
             controller: _phoneController,
@@ -225,7 +226,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
             maxLength: 10,
           ),
           const SizedBox(height: 32),
-          _buildFieldLabel('ADDRESS'),
+          _buildFieldLabel('address'.tr(context)),
           _buildTextField(
             Icons.location_on_outlined,
             controller: _addressController,
@@ -250,9 +251,9 @@ class _MembershipScreenState extends State<MembershipScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
-                  : const Text(
-                      'SUBMIT',
-                      style: TextStyle(
+                  : Text(
+                      'submit'.tr(context),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,

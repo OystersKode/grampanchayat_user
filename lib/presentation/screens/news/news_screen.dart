@@ -4,6 +4,7 @@ import '../../../data/models/news_model.dart';
 import '../../../data/repositories/app_repository.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/services/settings_service.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../widgets/app_error_widget.dart';
 import '../../widgets/announcement_card.dart';
 import '../../widgets/sidebar.dart';
@@ -151,9 +152,9 @@ class _NewsScreenState extends State<NewsScreen> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        title: const Text(
-          'Kagwad Panchayat',
-          style: TextStyle(
+        title: Text(
+          'app_title'.tr(context),
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -199,9 +200,9 @@ class _NewsScreenState extends State<NewsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  const Text(
-                    'OFFICIAL UPDATES',
-                    style: TextStyle(
+                  Text(
+                    'official_updates'.tr(context),
+                    style: const TextStyle(
                       fontSize: 12,
                       letterSpacing: 1.5,
                       fontWeight: FontWeight.bold,
@@ -209,9 +210,9 @@ class _NewsScreenState extends State<NewsScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Latest Village\nAnnouncements',
-                    style: TextStyle(
+                  Text(
+                    'latest_village_announcements'.tr(context),
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF370002),
@@ -232,11 +233,11 @@ class _NewsScreenState extends State<NewsScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _buildFilterChip('Today', 0),
+                        _buildFilterChip('today'.tr(context), 0),
                         const SizedBox(width: 8),
-                        _buildFilterChip('Yesterday', 1),
+                        _buildFilterChip('yesterday'.tr(context), 1),
                         const SizedBox(width: 8),
-                        _buildFilterChip('Day Before', 2),
+                        _buildFilterChip('day_before'.tr(context), 2),
                       ],
                     ),
                   ),
@@ -284,12 +285,12 @@ class _NewsScreenState extends State<NewsScreen> {
     }
 
     if (_newsItems.isEmpty) {
-      return const Padding(
-        key: ValueKey('empty'),
-        padding: EdgeInsets.symmetric(vertical: 24),
+      return Padding(
+        key: const ValueKey('empty'),
+        padding: const EdgeInsets.symmetric(vertical: 24),
         child: Center(
           child: Text(
-            'No announcements available.',
+            'no_announcements'.tr(context),
             textAlign: TextAlign.center,
           ),
         ),
