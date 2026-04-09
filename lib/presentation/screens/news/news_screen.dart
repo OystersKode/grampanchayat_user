@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../data/models/news_model.dart';
 import '../../../data/repositories/app_repository.dart';
 import '../../../core/config/app_config.dart';
+import '../../../core/services/settings_service.dart';
 import '../../widgets/app_error_widget.dart';
 import '../../widgets/announcement_card.dart';
 import '../../widgets/sidebar.dart';
@@ -162,7 +163,9 @@ class _NewsScreenState extends State<NewsScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                SettingsService.instance.toggleLanguage();
+              },
               style: TextButton.styleFrom(
                 backgroundColor: Colors.white.withOpacity(0.1),
                 side: BorderSide(color: Colors.white.withOpacity(0.2)),

@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
   http: ^1.2.2
@@ -30,10 +32,11 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/kagwad_logo.png"
+  image_path: "assets/images/applogo.jpeg"
   min_sdk_android: 21
 
 flutter:
   uses-material-design: true
   assets:
+    - assets/images/applogo.jpeg
     - assets/images/kagwad_logo.png

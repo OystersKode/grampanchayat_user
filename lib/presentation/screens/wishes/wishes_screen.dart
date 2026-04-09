@@ -55,7 +55,7 @@ class _WishesScreenState extends State<WishesScreen> {
             padding: const EdgeInsets.only(right: 12.0),
             child: TextButton(
               onPressed: () {
-                // Placeholder
+                SettingsService.instance.toggleLanguage();
               },
               style: TextButton.styleFrom(
                 backgroundColor: Colors.white.withOpacity(0.1),

@@ -22,6 +22,15 @@ class SettingsService extends ChangeNotifier {
   double get fontSize => _prefs.getDouble('font_size') ?? 16.0;
   bool get notificationsEnabled => _prefs.getBool('notifications_enabled') ?? true;
   bool get onboardingComplete => _prefs.getBool('onboarding_complete') ?? false;
+  String get languageCode => _prefs.getString('language_code') ?? 'en';
+
+  Locale get locale => Locale(languageCode);
+
+  Future<void> toggleLanguage() async {
+    final newCode = languageCode == 'en' ? 'kn' : 'en';
+    await _prefs.setString('language_code', newCode);
+    notifyListeners();
+  }
 
   Future<void> setOnboardingComplete() async {
     await _prefs.setBool('onboarding_complete', true);

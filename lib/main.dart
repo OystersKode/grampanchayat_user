@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'firebase_options.dart';
 import 'core/services/settings_service.dart';
 import 'data/repositories/app_repository.dart';
@@ -46,6 +47,16 @@ class GramPanchayatApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: "Kagwad.in",
           theme: AppTheme.lightTheme,
+          locale: SettingsService.instance.locale,
+          supportedLocales: const [
+            Locale('en'),
+            Locale('kn'),
+          ],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           builder: (context, child) {
             return MediaQuery(
               data: MediaQuery.of(context).copyWith(
