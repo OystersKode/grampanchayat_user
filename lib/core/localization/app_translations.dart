@@ -78,6 +78,7 @@ class AppTranslations {
       'mobile_no': 'Mobile No',
       'driver_village': 'Village',
       'taluka_vehicles_desc': 'Emergency & Transport Contact Details',
+      'no_vehicles_found': 'No vehicles found in the directory.',
     },
     'kn': {
       'app_title': 'ಕಾಗವಾಡ ತಾಲ್ಲೂಕು ಸುದ್ದಿ',
@@ -154,6 +155,7 @@ class AppTranslations {
       'mobile_no': 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ',
       'driver_village': 'ಗ್ರಾಮ',
       'taluka_vehicles_desc': 'ತುರ್ತು ಮತ್ತು ಸಾರಿಗೆ ಸಂಪರ್ಕ ವಿವರಗಳು',
+      'no_vehicles_found': 'ಡೈರೆಕ್ಟರಿಯಲ್ಲಿ ಯಾವುದೇ ವಾಹನಗಳು ಕಂಡುಬಂದಿಲ್ಲ.',
     },
   };
 

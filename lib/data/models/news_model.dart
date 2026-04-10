@@ -25,9 +25,16 @@ class News {
   });
 
   factory News.fromJson(Map<String, dynamic> json) {
-    // Priority 1: related_image_urls (from Admin App)
-    // Priority 2: images (from legacy/subcollection implementation)
-    final List<dynamic> rawImages = (json['related_image_urls'] as List<dynamic>?) ?? 
+    // Priority 1: cover_image_url (from recent database entry)
+    // Priority 2: header_image_url (previous version)
+    final String headerImg = (json['cover_image_url'] as String?) ?? 
+                             (json['header_image_url'] as String?) ?? '';
+
+    // Priority 1: related_images (from recent database entry)
+    // Priority 2: related_image_urls (from Admin App)
+    // Priority 3: images (from legacy/subcollection implementation)
+    final List<dynamic> rawImages = (json['related_images'] as List<dynamic>?) ?? 
+                                   (json['related_image_urls'] as List<dynamic>?) ?? 
                                    (json['images'] as List<dynamic>?) ?? 
                                    <dynamic>[];
     
@@ -38,7 +45,7 @@ class News {
       id: (json['id'] as String?) ?? '',
       title: (json['title'] as String?) ?? '',
       description: (json['content'] as String?) ?? (json['description'] as String?) ?? '',
-      headerImageUrl: (json['header_image_url'] as String?) ?? '',
+      headerImageUrl: headerImg,
       images: rawImages.map((dynamic item) {
         if (item is String) {
           return item;

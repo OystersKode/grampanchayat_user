@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import '../models/news_model.dart';
 import '../models/wish_model.dart';
 
@@ -50,6 +51,16 @@ class AppRepository {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['id'] = doc.id;
       
+      // Admin app uses 'related_image_urls'
+      if (data['related_image_urls'] != null) {
+        data['images'] = data['related_image_urls'];
+      }
+      
+      // Fallback for header_image_url
+      if (data['header_image_url'] == null && data['images'] != null && (data['images'] as List).isNotEmpty) {
+        data['header_image_url'] = data['images'][0];
+      }
+
       if (uid != null) {
         final likeQuery = await _firestore
             .collection('likes')
@@ -112,10 +123,22 @@ class AppRepository {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['id'] = doc.id;
       
-      // Keep legacy support for subcollection images if they exist
+      // Admin app uses 'related_image_urls' (List<String>)
+      // Legacy uses 'images' subcollection
       if (data['related_image_urls'] == null) {
         final imagesSnapshot = await doc.reference.collection('images').get();
-        data['images'] = imagesSnapshot.docs.map((d) => d.data()['image_url']).toList();
+        if (imagesSnapshot.docs.isNotEmpty) {
+          data['images'] = imagesSnapshot.docs.map((d) => d.data()['image_url']).toList();
+        }
+      } else {
+        // Ensure it's passed as 'images' to the model if needed, 
+        // though the model already handles 'related_image_urls'
+        data['images'] = data['related_image_urls'];
+      }
+      
+      // Also check for header_image_url
+      if (data['header_image_url'] == null && data['images'] != null && (data['images'] as List).isNotEmpty) {
+        data['header_image_url'] = data['images'][0];
       }
       
       if (uid != null) {
@@ -155,9 +178,19 @@ class AppRepository {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     data['id'] = doc.id;
 
-    // Fetch subcollection images
-    final imagesSnapshot = await doc.reference.collection('images').get();
-    data['images'] = imagesSnapshot.docs.map((d) => d.data()['image_url']).toList();
+    // Admin app uses 'related_image_urls'
+    if (data['related_image_urls'] != null) {
+      data['images'] = data['related_image_urls'];
+    } else {
+      // Fetch subcollection images (legacy)
+      final imagesSnapshot = await doc.reference.collection('images').get();
+      data['images'] = imagesSnapshot.docs.map((d) => d.data()['image_url']).toList();
+    }
+
+    // Fallback for header_image_url
+    if (data['header_image_url'] == null && data['images'] != null && (data['images'] as List).isNotEmpty) {
+      data['header_image_url'] = data['images'][0];
+    }
 
     if (uid != null) {
       final likeQuery = await _firestore
@@ -267,6 +300,23 @@ class AppRepository {
         });
       });
       return true;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getVehicles() async {
+    try {
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('vehicles')
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+    } catch (e) {
+      debugPrint("Error fetching vehicles: $e");
+      rethrow;
     }
   }
 
