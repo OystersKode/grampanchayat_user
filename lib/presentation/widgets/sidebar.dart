@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../../core/localization/app_translations.dart';
 import '../../routes/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -131,7 +132,7 @@ class AppSidebar extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 _buildSocialIcon(
-                  icon: Icons.camera_alt,
+                  icon: Icons.camera_alt, // Fallback to camera icon if CupertinoIcons.instagram is missing
                   url: 'https://www.instagram.com/kagwad.in?igsh=MWJuaDg1ZDJlYXExZg%3D%3D&utm_source=qr',
                   color: const Color(0xFFE4405F),
                   label: 'Instagram',
@@ -185,7 +186,7 @@ class AppSidebar extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: isYouTube 
-              ? Icon(Icons.play_arrow_rounded, color: color, size: 20)
+              ? Icon(icon, color: color, size: 24)
               : Icon(icon, color: color, size: 20),
           ),
           const SizedBox(height: 2),
