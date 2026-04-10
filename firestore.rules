@@ -8,16 +8,14 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-             get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
+         get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
     }
 
     // NEWS
     match /news/{id} {
       allow read: if true;
       allow create, delete: if isAdmin();
-      // Allow users to update ONLY the like_count
-      allow update: if isAuthenticated() &&
-                    (isAdmin() || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['like_count']));
+      allow update: if isAuthenticated(); // Allow users to increment like_count
 
       match /images/{imageId} {
         allow read: if true;
@@ -25,23 +23,30 @@ service cloud.firestore {
       }
     }
 
+    // ANNOUNCEMENTS
+    match /announcements/{id} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAuthenticated(); // Allow users to increment like_count
+    }
+
     // WISHES
     match /wishes/{id} {
       allow read: if true;
       allow create, delete: if isAdmin();
-      // Allow users to update ONLY the like_count
-      allow update: if isAuthenticated() &&
-                    (isAdmin() || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['like_count']));
+      allow update: if isAuthenticated(); // Allow users to increment like_count
     }
 
     // LIKES
     match /likes/{id} {
       allow read: if true;
-      // Ensure user can only like as themselves and for valid collections
-      allow create: if isAuthenticated() &&
-                      request.resource.data.guest_id == request.auth.uid &&
-                      (request.resource.data.content_type == 'news' || request.resource.data.content_type == 'wishes');
-      allow delete: if isAuthenticated() && resource.data.guest_id == request.auth.uid;
+      allow create, delete: if isAuthenticated();
+    }
+
+    // FEEDBACK
+    match /feedback/{id} {
+      allow create: if isAuthenticated();
+      allow read: if isAdmin();
     }
 
     // GUEST USERS

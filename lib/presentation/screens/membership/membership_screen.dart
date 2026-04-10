@@ -12,7 +12,8 @@ class MembershipScreen extends StatefulWidget {
 class _MembershipScreenState extends State<MembershipScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _villageController = TextEditingController();
+  final TextEditingController _pincodeController = TextEditingController();
   bool _isSubmitting = false;
   bool _isLoading = true;
   bool _alreadySubmitted = false;
@@ -43,14 +44,16 @@ class _MembershipScreenState extends State<MembershipScreen> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _addressController.dispose();
+    _villageController.dispose();
+    _pincodeController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     final String name = _nameController.text.trim();
     final String phone = _phoneController.text.trim();
-    final String address = _addressController.text.trim();
+    final String village = _villageController.text.trim();
+    final String pincode = _pincodeController.text.trim();
 
     if (name.isEmpty) {
       _showMessage('enter_name'.tr(context));
@@ -67,6 +70,21 @@ class _MembershipScreenState extends State<MembershipScreen> {
       return;
     }
 
+    if (village.isEmpty) {
+      _showMessage('enter_village'.tr(context));
+      return;
+    }
+
+    if (pincode.isEmpty) {
+      _showMessage('enter_pincode'.tr(context));
+      return;
+    }
+
+    if (pincode.length != 6 || !RegExp(r'^[0-9]+$').hasMatch(pincode)) {
+      _showMessage('valid_pincode'.tr(context));
+      return;
+    }
+
     setState(() {
       _isSubmitting = true;
     });
@@ -75,7 +93,8 @@ class _MembershipScreenState extends State<MembershipScreen> {
       await AppRepository.instance.submitMemberRequest(
         name: name,
         mobileNumber: phone,
-        address: address,
+        village: village,
+        pincode: pincode,
       );
       _showMessage('submit_success'.tr(context));
       setState(() {
@@ -226,11 +245,18 @@ class _MembershipScreenState extends State<MembershipScreen> {
             maxLength: 10,
           ),
           const SizedBox(height: 32),
-          _buildFieldLabel('address'.tr(context)),
+          _buildFieldLabel('village_name_label'.tr(context)),
           _buildTextField(
-            Icons.location_on_outlined,
-            controller: _addressController,
-            maxLines: 3,
+            Icons.location_city_outlined,
+            controller: _villageController,
+          ),
+          const SizedBox(height: 32),
+          _buildFieldLabel('pincode_label'.tr(context)),
+          _buildTextField(
+            Icons.pin_drop_outlined,
+            controller: _pincodeController,
+            keyboardType: TextInputType.number,
+            maxLength: 6,
           ),
           const SizedBox(height: 48),
           SizedBox(

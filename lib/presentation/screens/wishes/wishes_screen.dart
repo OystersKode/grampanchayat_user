@@ -54,26 +54,31 @@ class _WishesScreenState extends State<WishesScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
-            child: TextButton(
-              onPressed: () {
-                SettingsService.instance.toggleLanguage();
+            child: ListenableBuilder(
+              listenable: SettingsService.instance,
+              builder: (context, _) {
+                return TextButton(
+                  onPressed: () {
+                    SettingsService.instance.toggleLanguage();
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white.withOpacity(0.1),
+                    side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
+                  child: Text(
+                    SettingsService.instance.languageCode == 'en' ? 'ಕನ್ನಡ' : 'EN',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                );
               },
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.1),
-                side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-              ),
-              child: const Text(
-                'EN/ಕನ್ನಡ',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
             ),
           ),
         ],

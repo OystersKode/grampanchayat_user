@@ -9,6 +9,7 @@ import '../../widgets/app_error_widget.dart';
 import '../../widgets/announcement_card.dart';
 import '../../widgets/sidebar.dart';
 import '../news_details/news_details_screen.dart';
+import '../../../routes/app_routes.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -161,28 +162,82 @@ class _NewsScreenState extends State<NewsScreen> {
           ),
         ),
         actions: [
+          ListenableBuilder(
+            listenable: SettingsService.instance,
+            builder: (context, _) {
+              return StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('announcements')
+                    .orderBy('created_at', descending: true)
+                    .limit(1)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  bool hasNew = false;
+                  if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                    final latestId = snapshot.data!.docs.first.id;
+                    hasNew = latestId != SettingsService.instance.lastReadAnnouncementId;
+                  }
+
+                  return Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications_none, color: Colors.white),
+                        onPressed: () {
+                          if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                            SettingsService.instance.setLastReadAnnouncementId(snapshot.data!.docs.first.id);
+                          }
+                          Navigator.pushNamed(context, AppRoutes.announcements);
+                        },
+                      ),
+                      if (hasNew)
+                        Positioned(
+                          right: 12,
+                          top: 12,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 10,
+                              minHeight: 10,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
-            child: TextButton(
-              onPressed: () {
-                SettingsService.instance.toggleLanguage();
+            child: ListenableBuilder(
+              listenable: SettingsService.instance,
+              builder: (context, _) {
+                return TextButton(
+                  onPressed: () {
+                    SettingsService.instance.toggleLanguage();
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white.withOpacity(0.1),
+                    side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
+                  child: Text(
+                    SettingsService.instance.languageCode == 'en' ? 'ಕನ್ನಡ' : 'EN',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                );
               },
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.1),
-                side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-              ),
-              child: const Text(
-                'EN/ಕನ್ನಡ',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
             ),
           ),
         ],

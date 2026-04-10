@@ -27,7 +27,51 @@ class AppRepository {
 
   // In-memory cache
   final Map<String, List<News>> _newsCache = {};
+  final Map<String, List<News>> _announcementsCache = {};
   final Map<String, List<Wish>> _wishesCache = {};
+
+  Future<({List<News> news, DocumentSnapshot? lastDoc})> getAnnouncements({
+    int limit = 20,
+    bool forceRefresh = false,
+  }) async {
+    if (!forceRefresh && _announcementsCache.containsKey('all')) {
+      return (news: _announcementsCache['all']!, lastDoc: null);
+    }
+
+    final String? uid = _auth.currentUser?.uid;
+    final QuerySnapshot querySnapshot = await _firestore
+        .collection('announcements')
+        .orderBy('created_at', descending: true)
+        .limit(limit)
+        .get();
+
+    List<News> announcements = [];
+    for (var doc in querySnapshot.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['id'] = doc.id;
+      
+      if (uid != null) {
+        final likeQuery = await _firestore
+            .collection('likes')
+            .where('guest_id', isEqualTo: uid)
+            .where('content_id', isEqualTo: doc.id)
+            .where('content_type', isEqualTo: 'announcements')
+            .limit(1)
+            .get();
+        data['is_liked'] = likeQuery.docs.isNotEmpty;
+      } else {
+        data['is_liked'] = false;
+      }
+
+      announcements.add(News.fromJson(data));
+    }
+    
+    _announcementsCache['all'] = announcements;
+    return (
+      news: announcements,
+      lastDoc: querySnapshot.docs.isNotEmpty ? querySnapshot.docs.last : null
+    );
+  }
 
   // Updated News result class for pagination
   Future<({List<News> news, DocumentSnapshot? lastDoc})> getNews({
@@ -147,7 +191,8 @@ class AppRepository {
   Future<void> submitMemberRequest({
     required String name,
     required String mobileNumber,
-    required String address,
+    required String village,
+    required String pincode,
   }) async {
     final String? uid = _auth.currentUser?.uid;
     if (uid == null) throw Exception('User not authenticated');
@@ -155,15 +200,29 @@ class AppRepository {
     // Check if already submitted
     final alreadySubmitted = await hasSubmittedRequest();
     if (alreadySubmitted) {
-      throw Exception('You have already submitted a membership request.');
+      throw Exception('already_submitted_error');
     }
 
     await _firestore.collection('member_requests').add({
       'user_uid': uid,
       'name': name,
       'mobile_number': mobileNumber,
-      'address': address,
+      'village': village,
+      'pincode': pincode,
       'status': 'pending',
+      'created_at': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> submitFeedback({
+    required String feedback,
+  }) async {
+    final String? uid = _auth.currentUser?.uid;
+    if (uid == null) throw Exception('User not authenticated');
+
+    await _firestore.collection('feedback').add({
+      'user_uid': uid,
+      'feedback': feedback,
       'created_at': FieldValue.serverTimestamp(),
     });
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/localization/app_translations.dart';
 import '../../routes/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/auth_service.dart';
 
 class AppSidebar extends StatelessWidget {
@@ -57,6 +58,12 @@ class AppSidebar extends StatelessWidget {
                 ),
                 _buildDrawerItem(
                   context,
+                  icon: Icons.notifications_none,
+                  title: 'announcements'.tr(context),
+                  route: AppRoutes.announcements,
+                ),
+                _buildDrawerItem(
+                  context,
                   icon: Icons.card_giftcard,
                   title: 'wishes'.tr(context),
                   route: AppRoutes.wishes,
@@ -66,6 +73,24 @@ class AppSidebar extends StatelessWidget {
                   icon: Icons.person_add_alt_1_outlined,
                   title: 'membership'.tr(context),
                   route: AppRoutes.membership,
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.location_city,
+                  title: 'villages'.tr(context),
+                  route: AppRoutes.villages,
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.directions_car,
+                  title: 'taluka_vehicles'.tr(context),
+                  route: AppRoutes.vehicles,
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.feedback_outlined,
+                  title: 'feedback'.tr(context),
+                  route: AppRoutes.feedback,
                 ),
                 _buildDrawerItem(
                   context,
@@ -93,11 +118,83 @@ class AppSidebar extends StatelessWidget {
             ),
           ),
           const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildSocialIcon(
+                  icon: Icons.language,
+                  url: 'https://kagwad.in',
+                  color: Colors.blue,
+                  label: 'Website',
+                ),
+                const SizedBox(width: 16),
+                _buildSocialIcon(
+                  icon: Icons.camera_alt,
+                  url: 'https://www.instagram.com/kagwad.in?igsh=MWJuaDg1ZDJlYXExZg%3D%3D&utm_source=qr',
+                  color: const Color(0xFFE4405F),
+                  label: 'Instagram',
+                ),
+                const SizedBox(width: 16),
+                _buildSocialIcon(
+                  icon: Icons.play_arrow_rounded,
+                  url: 'https://youtube.com/@kagwad.in1?si=ZLFWK8XuSyFazUGD',
+                  color: const Color(0xFFFF0000),
+                  label: 'YouTube',
+                  isYouTube: true,
+                ),
+              ],
+            ),
+          ),
           const Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.only(bottom: 8.0),
             child: Text(
               'v1.0.0',
-              style: TextStyle(color: Colors.grey, fontSize: 12),
+              style: TextStyle(color: Colors.grey, fontSize: 10),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSocialIcon({
+    required IconData icon,
+    required String url,
+    required Color color,
+    required String label,
+    bool isYouTube = false,
+  }) {
+    return InkWell(
+      onTap: () async {
+        final uri = Uri.parse(url);
+        try {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } catch (e) {
+          debugPrint("Could not launch $url: $e");
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: isYouTube 
+              ? Icon(Icons.play_arrow_rounded, color: color, size: 20)
+              : Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 8,
+              color: color.withOpacity(0.8),
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],

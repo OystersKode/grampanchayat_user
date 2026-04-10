@@ -23,13 +23,28 @@ class SettingsService extends ChangeNotifier {
   bool get notificationsEnabled => _prefs.getBool('notifications_enabled') ?? true;
   bool get onboardingComplete => _prefs.getBool('onboarding_complete') ?? false;
   String get languageCode => _prefs.getString('language_code') ?? 'en';
+  String get lastReadAnnouncementId => _prefs.getString('last_read_announcement_id') ?? '';
 
   Locale get locale => Locale(languageCode);
+
+  Future<void> setLastReadAnnouncementId(String id) async {
+    await _prefs.setString('last_read_announcement_id', id);
+    notifyListeners();
+  }
 
   Future<void> toggleLanguage() async {
     final newCode = languageCode == 'en' ? 'kn' : 'en';
     await _prefs.setString('language_code', newCode);
     notifyListeners();
+  }
+
+  void clearCache() {
+    // This is a placeholder for any cache clearing logic if needed
+    // In our case, the UI will rebuild because of notifyListeners()
+    // but the AppRepository also has an in-memory cache that needs clearing
+    // to show translated content if it's fetched from Firestore.
+    // However, the current AppRepository implementation seems to fetch 
+    // data which might not be localized on the server side yet (titles/descs).
   }
 
   Future<void> setOnboardingComplete() async {

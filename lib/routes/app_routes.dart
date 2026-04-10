@@ -6,7 +6,10 @@ import '../presentation/screens/membership/membership_screen.dart';
 import '../presentation/screens/settings/settings_screen.dart';
 import '../presentation/screens/auth/login_screen.dart';
 import '../presentation/screens/auth/register_screen.dart';
-
+import '../presentation/screens/feedback/feedback_screen.dart';
+import '../presentation/screens/announcements/announcements_screen.dart';
+import '../presentation/screens/villages/villages_screen.dart';
+import '../presentation/screens/vehicles/vehicles_screen.dart';
 import '../presentation/screens/onboarding/onboarding_screen.dart';
 
 class AppRoutes {
@@ -17,6 +20,10 @@ class AppRoutes {
   static const wishes = '/wishes';
   static const membership = '/membership';
   static const settings = '/settings';
+  static const feedback = '/feedback';
+  static const announcements = '/announcements';
+  static const villages = '/villages';
+  static const vehicles = '/vehicles';
 
   static Map<String, WidgetBuilder> routes = {
     onboarding: (context) => const OnboardingScreen(),
@@ -26,5 +33,9 @@ class AppRoutes {
     wishes: (context) => const WishesScreen(),
     membership: (context) => const MembershipScreen(),
     settings: (context) => const SettingsScreen(),
+    feedback: (context) => const FeedbackScreen(),
+    announcements: (context) => const AnnouncementsScreen(),
+    villages: (context) => const VillagesScreen(),
+    vehicles: (context) => const VehiclesScreen(),
   };
 }
