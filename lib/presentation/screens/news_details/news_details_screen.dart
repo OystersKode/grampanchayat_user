@@ -151,6 +151,12 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                         const Icon(Icons.calendar_today, size: 16, color: Color(0xFF653D1E)),
                         const SizedBox(width: 8),
                         Text(item.date),
+                        if (item.location.isNotEmpty) ...[
+                          const SizedBox(width: 16),
+                          const Icon(Icons.location_on, size: 16, color: Color(0xFF653D1E)),
+                          const SizedBox(width: 4),
+                          Text(item.location),
+                        ],
                       ],
                     ),
                     const SizedBox(height: 20),

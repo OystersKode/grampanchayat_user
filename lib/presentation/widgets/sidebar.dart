@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/localization/app_translations.dart';
 import '../../routes/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -71,12 +72,6 @@ class AppSidebar extends StatelessWidget {
                 ),
                 _buildDrawerItem(
                   context,
-                  icon: Icons.person_add_alt_1_outlined,
-                  title: 'membership'.tr(context),
-                  route: AppRoutes.membership,
-                ),
-                _buildDrawerItem(
-                  context,
                   icon: Icons.location_city,
                   title: 'villages'.tr(context),
                   route: AppRoutes.villages,
@@ -86,6 +81,12 @@ class AppSidebar extends StatelessWidget {
                   icon: Icons.directions_car,
                   title: 'taluka_vehicles'.tr(context),
                   route: AppRoutes.vehicles,
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.person_add_alt_1_outlined,
+                  title: 'membership'.tr(context),
+                  route: AppRoutes.membership,
                 ),
                 _buildDrawerItem(
                   context,
@@ -120,30 +121,28 @@ class AppSidebar extends StatelessWidget {
           ),
           const Divider(),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildSocialIcon(
-                  icon: Icons.language,
+                  imagePath: 'assets/images/globe.png',
                   url: 'https://kagwad.in',
                   color: Colors.blue,
                   label: 'Website',
                 ),
-                const SizedBox(width: 16),
                 _buildSocialIcon(
-                  icon: Icons.camera_alt, // Fallback to camera icon if CupertinoIcons.instagram is missing
+                  imagePath: 'assets/images/instagram.png',
                   url: 'https://www.instagram.com/kagwad.in?igsh=MWJuaDg1ZDJlYXExZg%3D%3D&utm_source=qr',
                   color: const Color(0xFFE4405F),
                   label: 'Instagram',
                 ),
-                const SizedBox(width: 16),
                 _buildSocialIcon(
-                  icon: Icons.play_arrow_rounded,
+                  imagePath: 'assets/images/youtube.svg',
                   url: 'https://youtube.com/@kagwad.in1?si=ZLFWK8XuSyFazUGD',
                   color: const Color(0xFFFF0000),
                   label: 'YouTube',
-                  isYouTube: true,
+                  isSvg: true,
                 ),
               ],
             ),
@@ -161,11 +160,11 @@ class AppSidebar extends StatelessWidget {
   }
 
   Widget _buildSocialIcon({
-    required IconData icon,
+    required String imagePath,
     required String url,
     required Color color,
     required String label,
-    bool isYouTube = false,
+    bool isSvg = false,
   }) {
     return InkWell(
       onTap: () async {
@@ -180,20 +179,30 @@ class AppSidebar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: isYouTube 
-              ? Icon(icon, color: color, size: 24)
-              : Icon(icon, color: color, size: 20),
+            child: isSvg
+                ? SvgPicture.asset(
+                    imagePath,
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.contain,
+                  )
+                : Image.asset(
+                    imagePath,
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.contain,
+                  ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
-              fontSize: 8,
+              fontSize: 10,
               color: color.withOpacity(0.8),
               fontWeight: FontWeight.bold,
             ),
@@ -225,7 +234,6 @@ class AppSidebar extends StatelessWidget {
           onTap();
         } else if (route != null) {
           Navigator.pop(context); // Close drawer
-          // If we are already on the route, don't push it again
           if (ModalRoute.of(context)?.settings.name != route) {
             Navigator.pushNamed(context, route);
           }

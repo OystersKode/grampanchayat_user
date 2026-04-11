@@ -92,7 +92,7 @@ class AppRepository {
     int limit = 10,
     bool forceRefresh = false,
   }) async {
-    final String cacheKey = '${startDate?.toIso8601String()}_${endDate?.toIso8601String()}';
+    final String cacheKey = '${startDate?.toIso8601String()}_${endDate?.toIso8601String()}_$limit';
     
     // Only use cache for the first page and if not forcing refresh
     if (!forceRefresh && startAfter == null && _newsCache.containsKey(cacheKey)) {

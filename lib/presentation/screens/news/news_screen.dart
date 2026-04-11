@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../data/models/news_model.dart';
@@ -24,9 +25,12 @@ class _NewsScreenState extends State<NewsScreen> {
   bool _isMoreLoading = false;
   bool _hasMore = true;
   DocumentSnapshot? _lastDoc;
-  int _selectedFilterIndex = 0; // 0: Today, 1: Yesterday, 2: Day Before
+  int _selectedFilterIndex = 0; // 0: Today, 1: Yesterday, 2: Before
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
   String? _error;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -38,6 +42,8 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -59,12 +65,12 @@ class _NewsScreenState extends State<NewsScreen> {
     });
 
     try {
-      final dateRange = _getFilterDateRange();
+      final dateRange = _searchQuery.isEmpty ? _getFilterDateRange() : (start: null, end: null);
       final result = await AppRepository.instance.getNews(
         startDate: dateRange.start,
         endDate: dateRange.end,
         forceRefresh: forceRefresh,
-        limit: 10,
+        limit: _searchQuery.isEmpty ? 10 : 50,
       );
 
       if (mounted) {
@@ -72,7 +78,7 @@ class _NewsScreenState extends State<NewsScreen> {
           _newsItems.addAll(result.news);
           _lastDoc = result.lastDoc;
           _isLoading = false;
-          _hasMore = result.news.length == 10;
+          _hasMore = result.news.length == (_searchQuery.isEmpty ? 10 : 50);
         });
       }
     } catch (e) {
@@ -93,12 +99,12 @@ class _NewsScreenState extends State<NewsScreen> {
     });
 
     try {
-      final dateRange = _getFilterDateRange();
+      final dateRange = _searchQuery.isEmpty ? _getFilterDateRange() : (start: null, end: null);
       final result = await AppRepository.instance.getNews(
         startDate: dateRange.start,
         endDate: dateRange.end,
         startAfter: _lastDoc,
-        limit: 10,
+        limit: _searchQuery.isEmpty ? 10 : 50,
       );
 
       if (mounted) {
@@ -106,7 +112,7 @@ class _NewsScreenState extends State<NewsScreen> {
           _newsItems.addAll(result.news);
           _lastDoc = result.lastDoc;
           _isMoreLoading = false;
-          _hasMore = result.news.length == 10;
+          _hasMore = result.news.length == (_searchQuery.isEmpty ? 10 : 50);
         });
       }
     } catch (e) {
@@ -118,23 +124,31 @@ class _NewsScreenState extends State<NewsScreen> {
     }
   }
 
-  ({DateTime start, DateTime end}) _getFilterDateRange() {
+  ({DateTime? start, DateTime? end}) _getFilterDateRange() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     
-    DateTime filterDate;
-    if (_selectedFilterIndex == 1) {
-      filterDate = today.subtract(const Duration(days: 1));
-    } else if (_selectedFilterIndex == 2) {
-      filterDate = today.subtract(const Duration(days: 2));
+    if (_selectedFilterIndex == 0) {
+      // Today
+      return (
+        start: today,
+        end: today.add(const Duration(hours: 23, minutes: 59, seconds: 59))
+      );
+    } else if (_selectedFilterIndex == 1) {
+      // Yesterday
+      final yesterday = today.subtract(const Duration(days: 1));
+      return (
+        start: yesterday,
+        end: yesterday.add(const Duration(hours: 23, minutes: 59, seconds: 59))
+      );
     } else {
-      filterDate = today;
+      // Before (Everything before yesterday)
+      final yesterdayStart = today.subtract(const Duration(days: 1));
+      return (
+        start: null,
+        end: yesterdayStart.subtract(const Duration(seconds: 1))
+      );
     }
-
-    return (
-      start: filterDate,
-      end: filterDate.add(const Duration(hours: 23, minutes: 59, seconds: 59))
-    );
   }
 
   Future<void> _refreshNews() async {
@@ -284,6 +298,55 @@ class _NewsScreenState extends State<NewsScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                      });
+                      if (_debounce?.isActive ?? false) _debounce?.cancel();
+                      _debounce = Timer(const Duration(milliseconds: 500), () {
+                        if (mounted) {
+                          _loadInitialNews();
+                        }
+                      });
+                    },
+                    onSubmitted: (value) {
+                      _loadInitialNews();
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'search_news'.tr(context),
+                      prefixIcon: const Icon(Icons.search, color: Color(0xFF5E0006)),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, color: Color(0xFF5E0006)),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  _searchQuery = "";
+                                });
+                                _loadInitialNews(forceRefresh: true);
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF5E0006), width: 1),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -292,7 +355,7 @@ class _NewsScreenState extends State<NewsScreen> {
                         const SizedBox(width: 8),
                         _buildFilterChip('yesterday'.tr(context), 1),
                         const SizedBox(width: 8),
-                        _buildFilterChip('day_before'.tr(context), 2),
+                        _buildFilterChip('before'.tr(context), 2),
                       ],
                     ),
                   ),
@@ -339,13 +402,23 @@ class _NewsScreenState extends State<NewsScreen> {
       );
     }
 
-    if (_newsItems.isEmpty) {
+    final filteredItems = _newsItems.where((item) {
+      if (_searchQuery.isEmpty) return true;
+      return item.title.toLowerCase().contains(_searchQuery) ||
+          item.description.toLowerCase().contains(_searchQuery) ||
+          item.category.toLowerCase().contains(_searchQuery) ||
+          item.location.toLowerCase().contains(_searchQuery);
+    }).toList();
+
+    if (filteredItems.isEmpty) {
       return Padding(
         key: const ValueKey('empty'),
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Center(
           child: Text(
-            'no_announcements'.tr(context),
+            _searchQuery.isEmpty
+                ? 'no_announcements'.tr(context)
+                : 'No matching announcements found.',
             textAlign: TextAlign.center,
           ),
         ),
@@ -354,7 +427,7 @@ class _NewsScreenState extends State<NewsScreen> {
 
     return Column(
       key: ValueKey('content_$_selectedFilterIndex'),
-      children: _newsItems.map((item) {
+      children: filteredItems.map((item) {
         final String imageUrl = item.headerImageUrl.isNotEmpty
             ? item.headerImageUrl
             : (item.images.isNotEmpty ? item.images.first : '');
@@ -364,6 +437,7 @@ class _NewsScreenState extends State<NewsScreen> {
           categoryColor: item.categoryColor,
           title: item.title,
           description: item.description,
+          location: item.location,
           imageUrl: imageUrl,
           likes: item.likeCount.toString(),
           initialIsLiked: item.isLiked,

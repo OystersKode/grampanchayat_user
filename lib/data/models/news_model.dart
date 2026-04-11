@@ -9,6 +9,7 @@ class News {
   final List<String> images;
   final String category;
   final String date;
+  final String location;
   final int likeCount;
   final bool isLiked;
 
@@ -20,6 +21,7 @@ class News {
     required this.images,
     required this.category,
     required this.date,
+    required this.location,
     required this.likeCount,
     required this.isLiked,
   });
@@ -57,6 +59,7 @@ class News {
       }).where((String item) => item.isNotEmpty).toList(),
       category: categoryStr.toUpperCase(),
       date: _formatDate(json['created_at']),
+      location: (json['location'] as String?) ?? '',
       likeCount: _parseLikeCount(json['like_count']),
       isLiked: json['is_liked'] == 1 || json['is_liked'] == true,
     );

@@ -12,6 +12,7 @@ class AnnouncementCard extends StatefulWidget {
   final Color? categoryColor;
   final String title;
   final String description;
+  final String location;
   final String imageUrl;
   final String likes;
   final bool initialIsLiked;
@@ -25,6 +26,7 @@ class AnnouncementCard extends StatefulWidget {
     this.categoryColor,
     required this.title,
     required this.description,
+    required this.location,
     required this.imageUrl,
     required this.likes,
     this.initialIsLiked = false,
@@ -220,6 +222,23 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                         ),
                       ),
                       const SizedBox(height: 6),
+                      if (widget.location.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, color: Colors.white70, size: 14),
+                            const SizedBox(width: 4),
+                            Text(
+                              widget.location,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                      ],
                       Text(
                         _stripMarkdown(widget.description),
                         maxLines: 2,
