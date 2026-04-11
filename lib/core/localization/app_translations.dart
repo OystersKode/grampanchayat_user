@@ -4,7 +4,7 @@ import '../services/settings_service.dart';
 class AppTranslations {
   static final Map<String, Map<String, String>> _translations = {
     'en': {
-      'app_title': 'Kagwad Taluka News',
+      'app_title': 'Kagwad Taluka',
       'news': 'News',
       'wishes': 'Wishes',
       'membership': 'Become a Member',
@@ -82,7 +82,7 @@ class AppTranslations {
       'search_news': 'Search news...',
     },
     'kn': {
-      'app_title': 'ಕಾಗವಾಡ ತಾಲ್ಲೂಕು ಸುದ್ದಿ',
+      'app_title': 'ಕಾಗವಾಡ ತಾಲ್ಲೂಕು',
       'news': 'ಸುದ್ದಿ',
       'wishes': 'ಶುಭಾಶಯಗಳು',
       'membership': 'ಸದಸ್ಯರಾಗಿ',

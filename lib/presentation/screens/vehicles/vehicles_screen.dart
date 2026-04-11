@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/localization/app_translations.dart';
 import '../../../core/services/settings_service.dart';
@@ -102,6 +103,64 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                     }
 
                     final vehiclesList = snapshot.data ?? [];
+
+                    // Define the desired sequence of driver names
+                    final List<String> sequence = [
+                      "Sumit parit",
+                      "Anil Kallole",
+                      "Salim mahat",
+                      "Shankar Nayak",
+                      "Dhanaraj Karav",
+                      "Mahesh Patil",
+                      "Imran Makandar",
+                      "Sunil magadum",
+                      "Ravi mali",
+                      "Raju Hulyal",
+                      "Shivaprasad ganiga",
+                      "Pintu bhajantri",
+                      "Prashant khot",
+                      "Mahavir khsirasagar",
+                      "Suresh pujari",
+                      "Swayam Patil",
+                      "Ramesh Hulyal",
+                      "Kiran shintre",
+                      "Krishna Kamble",
+                      "Pravin Kamble",
+                      "Kalappa sutar",
+                      "Uttam mali",
+                      "Adinath kerur",
+                      "Shashikant Ghatage",
+                      "AKASH Ghorade",
+                    ];
+
+                    // Sort the list based on the predefined sequence
+                    vehiclesList.sort((a, b) {
+                      final nameA = (a['driver_name'] ?? a['name'] ?? a['owner_name'] ?? '').toString().toLowerCase().trim();
+                      final nameB = (b['driver_name'] ?? b['name'] ?? b['owner_name'] ?? '').toString().toLowerCase().trim();
+
+                      final indexA = sequence.indexWhere((s) => s.toLowerCase().trim() == nameA);
+                      final indexB = sequence.indexWhere((s) => s.toLowerCase().trim() == nameB);
+
+                      // If both names are in the sequence, sort by their position in the sequence
+                      if (indexA != -1 && indexB != -1) {
+                        return indexA.compareTo(indexB);
+                      }
+                      // If only nameA is in the sequence, it comes before nameB
+                      if (indexA != -1) return -1;
+                      // If only nameB is in the sequence, it comes before nameA
+                      if (indexB != -1) return 1;
+
+                      // If neither is in the sequence (newly added by admin), sort by creation time (newest at bottom)
+                      // Assuming 'created_at' exists, otherwise they stay in their relative order at the end
+                      final timeA = a['created_at'] as Timestamp?;
+                      final timeB = b['created_at'] as Timestamp?;
+
+                      if (timeA != null && timeB != null) {
+                        return timeA.compareTo(timeB); // Ascending: older first, newer at the bottom
+                      }
+
+                      return 0;
+                    });
 
                     final filteredList = vehiclesList.where((driver) {
                       final name = (driver['driver_name'] ?? driver['name'] ?? driver['owner_name'] ?? '').toString().toLowerCase();
