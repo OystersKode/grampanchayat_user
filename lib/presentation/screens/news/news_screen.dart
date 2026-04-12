@@ -167,13 +167,18 @@ class _NewsScreenState extends State<NewsScreen> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        title: Text(
-          'app_title'.tr(context),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        title: ListenableBuilder(
+          listenable: SettingsService.instance,
+          builder: (context, _) {
+            return Text(
+              'app_title'.tr(context),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          },
         ),
         actions: [
           ListenableBuilder(
@@ -257,130 +262,135 @@ class _NewsScreenState extends State<NewsScreen> {
         ],
       ),
       drawer: const AppSidebar(),
-      body: RefreshIndicator(
-        onRefresh: _refreshNews,
-        color: const Color(0xFFBC0006),
-        backgroundColor: Colors.white,
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  Text(
-                    'official_updates'.tr(context),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF653D1E),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'latest_village_announcements'.tr(context),
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF370002),
-                      height: 1.1,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    height: 4,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFBC0006),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value.toLowerCase();
-                      });
-                      if (_debounce?.isActive ?? false) _debounce?.cancel();
-                      _debounce = Timer(const Duration(milliseconds: 500), () {
-                        if (mounted) {
+      body: ListenableBuilder(
+        listenable: SettingsService.instance,
+        builder: (context, _) {
+          return RefreshIndicator(
+            onRefresh: _refreshNews,
+            color: const Color(0xFFBC0006),
+            backgroundColor: Colors.white,
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      Text(
+                        'official_updates'.tr(context),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF653D1E),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'latest_village_announcements'.tr(context),
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF370002),
+                          height: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        height: 4,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFBC0006),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      TextField(
+                        controller: _searchController,
+                        onChanged: (value) {
+                          setState(() {
+                            _searchQuery = value.toLowerCase();
+                          });
+                          if (_debounce?.isActive ?? false) _debounce?.cancel();
+                          _debounce = Timer(const Duration(milliseconds: 500), () {
+                            if (mounted) {
+                              _loadInitialNews();
+                            }
+                          });
+                        },
+                        onSubmitted: (value) {
                           _loadInitialNews();
-                        }
-                      });
-                    },
-                    onSubmitted: (value) {
-                      _loadInitialNews();
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'search_news'.tr(context),
-                      prefixIcon: const Icon(Icons.search, color: Color(0xFF5E0006)),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, color: Color(0xFF5E0006)),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {
-                                  _searchQuery = "";
-                                });
-                                _loadInitialNews(forceRefresh: true);
-                              },
-                            )
-                          : null,
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'search_news'.tr(context),
+                          prefixIcon: const Icon(Icons.search, color: Color(0xFF5E0006)),
+                          suffixIcon: _searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear, color: Color(0xFF5E0006)),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() {
+                                      _searchQuery = "";
+                                    });
+                                    _loadInitialNews(forceRefresh: true);
+                                  },
+                                )
+                              : null,
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0xFF5E0006), width: 1),
+                          ),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                      const SizedBox(height: 16),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildFilterChip('today'.tr(context), 0),
+                            const SizedBox(width: 8),
+                            _buildFilterChip('yesterday'.tr(context), 1),
+                            const SizedBox(width: 8),
+                            _buildFilterChip('before'.tr(context), 2),
+                          ],
+                        ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Color(0xFF5E0006), width: 1),
-                      ),
+                      const SizedBox(height: 24),
+                    ]),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: _buildMainContent(),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildFilterChip('today'.tr(context), 0),
-                        const SizedBox(width: 8),
-                        _buildFilterChip('yesterday'.tr(context), 1),
-                        const SizedBox(width: 8),
-                        _buildFilterChip('before'.tr(context), 2),
-                      ],
+                ),
+                if (_isMoreLoading)
+                  const SliverPadding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    sliver: SliverToBoxAdapter(
+                      child: Center(child: CircularProgressIndicator()),
                     ),
                   ),
-                  const SizedBox(height: 24),
-                ]),
-              ),
+              ],
             ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverToBoxAdapter(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: _buildMainContent(),
-                ),
-              ),
-            ),
-            if (_isMoreLoading)
-              const SliverPadding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                sliver: SliverToBoxAdapter(
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/localization/app_translations.dart';
 import '../../../core/services/settings_service.dart';
 import '../../../data/repositories/app_repository.dart';
+import '../../widgets/translated_text.dart';
 import '../../widgets/announcement_card.dart';
 
 class AnnouncementsScreen extends StatefulWidget {
@@ -83,7 +84,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                                 color: const Color(0xFF5E0006).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: Text(
+                              child: TranslatedText(
                                 item.category.toUpperCase(),
                                 style: const TextStyle(
                                   fontSize: 10,
@@ -97,7 +98,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Text(
+                        TranslatedText(
                           item.title,
                           style: const TextStyle(
                             fontSize: 18,
@@ -106,7 +107,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
+                        TranslatedText(
                           item.description,
                           style: const TextStyle(
                             fontSize: 14,

@@ -8,6 +8,7 @@ import '../../../core/utils/share_utils.dart';
 import '../../../data/models/wish_model.dart';
 import '../../../data/repositories/app_repository.dart';
 import '../../widgets/like_share_buttons.dart';
+import '../../widgets/translated_text.dart';
 import '../../widgets/sidebar.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -35,29 +36,29 @@ class _WishesScreenState extends State<WishesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFF8EF),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF5E0006),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'village_wishes'.tr(context),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: ListenableBuilder(
-              listenable: SettingsService.instance,
-              builder: (context, _) {
-                return TextButton(
+    return ListenableBuilder(
+      listenable: SettingsService.instance,
+      builder: (context, _) {
+        return Scaffold(
+          backgroundColor: const Color(0xFFFFF8EF),
+          appBar: AppBar(
+            backgroundColor: const Color(0xFF5E0006),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              'village_wishes'.tr(context),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: TextButton(
                   onPressed: () {
                     SettingsService.instance.toggleLanguage();
                   },
@@ -70,86 +71,86 @@ class _WishesScreenState extends State<WishesScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   child: Text(
-                    SettingsService.instance.languageCode == 'en' ? 'ಕನ್ನಡ' : 'EN',
+                    SettingsService.instance.languageCode == 'en' ? 'ಕನ್ನಡ' : 'English',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
                   ),
+                ),
+              ),
+            ],
+          ),
+          drawer: const AppSidebar(),
+          body: RefreshIndicator(
+            onRefresh: _refreshWishes,
+            child: FutureBuilder<List<Wish>>(
+              future: _wishesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
+                final wishes = snapshot.data ?? [];
+                if (wishes.isEmpty) {
+                  return Center(
+                    child: Text('no_wishes'.tr(context)),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  itemCount: wishes.length + 1, // +1 for the header
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'community_spirit'.tr(context),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF653D1E),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'village_wishes'.tr(context),
+                            style: const TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF241A06),
+                              height: 1.1,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'village_wishes_desc'.tr(context),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF653D1E),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                        ],
+                      );
+                    }
+                    final wish = wishes[index - 1];
+                    return WishCard(wish: wish);
+                  },
                 );
               },
             ),
           ),
-        ],
-      ),
-      drawer: const AppSidebar(),
-      body: RefreshIndicator(
-        onRefresh: _refreshWishes,
-        child: FutureBuilder<List<Wish>>(
-          future: _wishesFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              );
-            }
-            final wishes = snapshot.data ?? [];
-            if (wishes.isEmpty) {
-              return Center(
-                child: Text('no_wishes'.tr(context)),
-              );
-            }
-
-            return ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              itemCount: wishes.length + 1, // +1 for the header
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'community_spirit'.tr(context),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          letterSpacing: 1.5,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF653D1E),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'village_wishes'.tr(context),
-                        style: const TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF241A06),
-                          height: 1.1,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'village_wishes_desc'.tr(context),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF653D1E),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                    ],
-                  );
-                }
-                final wish = wishes[index - 1];
-                return WishCard(wish: wish);
-              },
-            );
-          },
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -245,7 +246,7 @@ class _WishCardState extends State<WishCard> {
                       color: Color(0xFFBC0006),
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    TranslatedText(
                       widget.wish.tag.toUpperCase(),
                       style: const TextStyle(
                         fontSize: 10,
@@ -257,7 +258,7 @@ class _WishCardState extends State<WishCard> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(
+                TranslatedText(
                   widget.wish.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -268,7 +269,7 @@ class _WishCardState extends State<WishCard> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                TranslatedText(
                   widget.wish.content,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,

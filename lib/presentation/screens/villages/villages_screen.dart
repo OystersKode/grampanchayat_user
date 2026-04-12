@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/translated_text.dart';
 import '../../../core/localization/app_translations.dart';
 import '../../../core/services/settings_service.dart';
 
@@ -101,7 +102,7 @@ class VillagesScreen extends StatelessWidget {
                       rows: villages.map((village) {
                         return DataRow(
                           cells: [
-                            DataCell(Text(village['name'] ?? '')),
+                            DataCell(TranslatedText(village['name'] ?? '')),
                             DataCell(Text(village['pincode'] ?? '')),
                           ],
                         );

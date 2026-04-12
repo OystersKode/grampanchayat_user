@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../widgets/translated_text.dart';
 import '../../../core/localization/app_translations.dart';
 import '../../../core/services/settings_service.dart';
 import '../../../data/repositories/app_repository.dart';
@@ -70,7 +71,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                     });
                   },
                   decoration: InputDecoration(
-                    hintText: 'Search name, village, model...',
+                    hintText: 'search_vehicles_hint'.tr(context),
                     prefixIcon: const Icon(Icons.search, color: Color(0xFF5E0006)),
                     filled: true,
                     fillColor: Colors.white,
@@ -221,7 +222,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                                   size: 20,
                                 ),
                               ),
-                              title: Text(
+                              title: TranslatedText(
                                 name,
                                 style: const TextStyle(
                                   fontSize: 16,
@@ -229,7 +230,7 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                                   color: Color(0xFF370002),
                                 ),
                               ),
-                              subtitle: Text(
+                              subtitle: TranslatedText(
                                 village,
                                 style: const TextStyle(
                                   fontSize: 13,
@@ -252,13 +253,13 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                const Text(
-                                                  'Phone Number',
-                                                  style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold),
+                                                Text(
+                                                  'phone_number_label'.tr(context),
+                                                  style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold),
                                                 ),
                                                 const SizedBox(height: 4),
                                                 Text(
-                                                  mobile.isNotEmpty ? mobile : 'Not Provided',
+                                                  mobile.isNotEmpty ? mobile : 'not_provided'.tr(context),
                                                   style: const TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w600,
@@ -288,12 +289,12 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                                               child: Column(
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  const Text(
-                                                    'Vehicle Model',
-                                                    style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold),
+                                                  Text(
+                                                    'vehicle_model_label'.tr(context),
+                                                    style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold),
                                                   ),
                                                   const SizedBox(height: 4),
-                                                  Text(
+                                                  TranslatedText(
                                                     vehicleModel.toString(),
                                                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                                                   ),
@@ -305,9 +306,9 @@ class _VehiclesScreenState extends State<VehiclesScreen> {
                                               child: Column(
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  const Text(
-                                                    'Vehicle No.',
-                                                    style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold),
+                                                  Text(
+                                                    'vehicle_no_label'.tr(context),
+                                                    style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold),
                                                   ),
                                                   const SizedBox(height: 4),
                                                   Text(

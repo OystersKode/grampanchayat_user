@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'firebase_options.dart';
 import 'core/services/settings_service.dart';
+import 'core/services/translation_service.dart';
 import 'data/repositories/app_repository.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
@@ -15,6 +16,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await SettingsService.initialize();
+  await TranslationService.instance.init();
   AppRepository.initialize();
 
   // Handle Anonymous Auth for Guest Users

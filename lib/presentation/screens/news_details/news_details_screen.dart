@@ -7,6 +7,7 @@ import '../../../core/utils/share_utils.dart';
 import '../../../data/models/news_model.dart';
 import '../../../data/repositories/app_repository.dart';
 import '../../widgets/like_share_buttons.dart';
+import '../../widgets/translated_text.dart';
 
 class NewsDetailsScreen extends StatefulWidget {
   const NewsDetailsScreen({super.key, this.news});
@@ -64,13 +65,18 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 12),
               ),
-              child: const Text(
-                'EN/ಕನ್ನಡ',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
+              child: ListenableBuilder(
+                listenable: SettingsService.instance,
+                builder: (context, _) {
+                  return Text(
+                    SettingsService.instance.languageCode == 'en' ? 'ಕನ್ನಡ' : 'English',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -127,7 +133,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    TranslatedText(
                       item.category,
                       style: const TextStyle(
                         fontSize: 12,
@@ -137,7 +143,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Text(
+                    TranslatedText(
                       item.title,
                       style: const TextStyle(
                         fontSize: 28,
@@ -155,7 +161,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                           const SizedBox(width: 16),
                           const Icon(Icons.location_on, size: 16, color: Color(0xFF653D1E)),
                           const SizedBox(width: 4),
-                          Text(item.location),
+                          TranslatedText(item.location),
                         ],
                       ],
                     ),
@@ -172,34 +178,12 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                       initialIsLiked: item.isLiked,
                     ),
                     const SizedBox(height: 20),
-                    MarkdownBody(
-                      data: item.description,
-                      styleSheet: MarkdownStyleSheet(
-                        p: const TextStyle(
-                          fontSize: 16,
-                          height: 1.5,
-                          color: Color(0xFF57413F),
-                        ),
-                        h1: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF370002),
-                        ),
-                        h2: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF370002),
-                        ),
-                        strong: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF370002),
-                        ),
-                        em: const TextStyle(
-                          fontStyle: FontStyle.italic,
-                        ),
-                        listBullet: const TextStyle(
-                          color: Color(0xFFBC0006),
-                        ),
+                    TranslatedText(
+                      item.description,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        height: 1.5,
+                        color: Color(0xFF57413F),
                       ),
                     ),
                     const SizedBox(height: 24),

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import '../../core/localization/app_translations.dart';
 import '../../core/utils/share_utils.dart';
 import '../../data/repositories/app_repository.dart';
+import 'translated_text.dart';
 
 class AnnouncementCard extends StatefulWidget {
   final String contentId;
@@ -199,7 +201,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                           color: widget.categoryColor ?? const Color(0xFFBC0006),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text(
+                        child: TranslatedText(
                           widget.category,
                           style: const TextStyle(
                             color: Colors.white,
@@ -210,7 +212,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Text(
+                      TranslatedText(
                         widget.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -227,7 +229,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                           children: [
                             const Icon(Icons.location_on, color: Colors.white70, size: 14),
                             const SizedBox(width: 4),
-                            Text(
+                            TranslatedText(
                               widget.location,
                               style: const TextStyle(
                                 color: Colors.white70,
@@ -239,7 +241,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                         ),
                         const SizedBox(height: 4),
                       ],
-                      Text(
+                      TranslatedText(
                         _stripMarkdown(widget.description),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -300,14 +302,14 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.share_outlined, color: Color(0xFFBC0006), size: 22),
-                          SizedBox(width: 10),
+                          const Icon(Icons.share_outlined, color: Color(0xFFBC0006), size: 22),
+                          const SizedBox(width: 10),
                           Text(
-                            'Share',
-                            style: TextStyle(
+                            'share'.tr(context),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFFBC0006),

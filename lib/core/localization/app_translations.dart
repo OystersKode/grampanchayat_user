@@ -80,6 +80,15 @@ class AppTranslations {
       'taluka_vehicles_desc': 'Emergency & Transport Contact Details',
       'no_vehicles_found': 'No vehicles found in the directory.',
       'search_news': 'Search news...',
+      'share': 'Share',
+      'search_vehicles_hint': 'Search name, village, model...',
+      'phone_number_label': 'Phone Number',
+      'vehicle_model_label': 'Vehicle Model',
+      'vehicle_no_label': 'Vehicle No.',
+      'not_provided': 'Not Provided',
+      'Basava Nagar Devaraddi Tot': 'Basava Nagar Devaraddi Tot',
+      'Mangsuli': 'Mangsuli',
+      'Siddarth Nagar': 'Siddarth Nagar',
     },
     'kn': {
       'app_title': 'ಕಾಗವಾಡ ತಾಲ್ಲೂಕು',
@@ -158,17 +167,24 @@ class AppTranslations {
       'taluka_vehicles_desc': 'ತುರ್ತು ಮತ್ತು ಸಾರಿಗೆ ಸಂಪರ್ಕ ವಿವರಗಳು',
       'no_vehicles_found': 'ಡೈರೆಕ್ಟರಿಯಲ್ಲಿ ಯಾವುದೇ ವಾಹನಗಳು ಕಂಡುಬಂದಿಲ್ಲ.',
       'search_news': 'ಸುದ್ದಿ ಹುಡುಕಿ...',
+      'share': 'ಹಂಚಿಕೊಳ್ಳಿ',
+      'search_vehicles_hint': 'ಹೆಸರು, ಗ್ರಾಮ, ಮಾದರಿಯನ್ನು ಹುಡುಕಿ...',
+      'phone_number_label': 'ಫೋನ್ ಸಂಖ್ಯೆ',
+      'vehicle_model_label': 'ವಾಹನ ಮಾದರಿ',
+      'vehicle_no_label': 'ವಾಹನ ಸಂಖ್ಯೆ',
+      'not_provided': 'ಒದಗಿಸಿಲ್ಲ',
+      'Basava Nagar Devaraddi Tot': 'ಬಸವ ನಗರ ದೇವರಡ್ಡಿ ತೋಟ',
+      'Mangsuli': 'ಮಂಗಸೂಳಿ',
+      'Siddarth Nagar': 'ಸಿದ್ಧಾರ್ಥ ನಗರ',
     },
   };
 
   static String translate(BuildContext context, String key) {
     try {
-      final locale = Localizations.localeOf(context);
-      return _translations[locale.languageCode]?[key] ?? key;
-    } catch (e) {
-      // Fallback if context doesn't have Localizations
       final languageCode = SettingsService.instance.languageCode;
       return _translations[languageCode]?[key] ?? key;
+    } catch (e) {
+      return key;
     }
   }
 }
