@@ -16,6 +16,7 @@ class AnnouncementCard extends StatefulWidget {
   final String description;
   final String location;
   final String imageUrl;
+  final String date;
   final String likes;
   final bool initialIsLiked;
   final String shareUrl;
@@ -30,6 +31,7 @@ class AnnouncementCard extends StatefulWidget {
     required this.description,
     required this.location,
     required this.imageUrl,
+    required this.date,
     required this.likes,
     this.initialIsLiked = false,
     required this.shareUrl,
@@ -318,6 +320,30 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                         ],
                       ),
                     ),
+                  ),
+                ),
+                const Spacer(),
+                // DATE
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.calendar_today_outlined,
+                        color: Color(0xFF653D1E),
+                        size: 14,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        widget.date,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF653D1E),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

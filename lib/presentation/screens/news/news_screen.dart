@@ -525,6 +525,7 @@ class _NewsScreenState extends State<NewsScreen> {
           description: item.description,
           location: item.location,
           imageUrl: imageUrl,
+          date: item.date,
           likes: item.likeCount.toString(),
           initialIsLiked: item.isLiked,
           shareUrl: '${AppConfig.shareBaseUrl}/news/${item.id}',
