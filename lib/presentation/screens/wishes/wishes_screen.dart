@@ -11,6 +11,7 @@ import '../../widgets/like_share_buttons.dart';
 import '../../widgets/translated_text.dart';
 import '../../widgets/sidebar.dart';
 import 'package:share_plus/share_plus.dart';
+import 'wish_details_screen.dart';
 
 class WishesScreen extends StatefulWidget {
   const WishesScreen({super.key});
@@ -143,7 +144,17 @@ class _WishesScreenState extends State<WishesScreen> {
                       );
                     }
                     final wish = wishes[index - 1];
-                    return WishCard(wish: wish);
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WishDetailsScreen(wish: wish),
+                          ),
+                        );
+                      },
+                      child: WishCard(wish: wish),
+                    );
                   },
                 );
               },
