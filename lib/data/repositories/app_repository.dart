@@ -46,6 +46,17 @@ class AppRepository {
         .limit(limit)
         .get();
 
+    // Fetch all likes for this user for announcements in one go to avoid N+1 queries
+    Set<String> likedContentIds = {};
+    if (uid != null) {
+      final likesSnapshot = await _firestore
+          .collection('likes')
+          .where('guest_id', isEqualTo: uid)
+          .where('content_type', isEqualTo: 'announcements')
+          .get();
+      likedContentIds = likesSnapshot.docs.map((doc) => doc.data()['content_id'] as String).toSet();
+    }
+
     List<News> announcements = [];
     for (var doc in querySnapshot.docs) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
@@ -61,19 +72,7 @@ class AppRepository {
         data['header_image_url'] = data['images'][0];
       }
 
-      if (uid != null) {
-        final likeQuery = await _firestore
-            .collection('likes')
-            .where('guest_id', isEqualTo: uid)
-            .where('content_id', isEqualTo: doc.id)
-            .where('content_type', isEqualTo: 'announcements')
-            .limit(1)
-            .get();
-        data['is_liked'] = likeQuery.docs.isNotEmpty;
-      } else {
-        data['is_liked'] = false;
-      }
-
+      data['is_liked'] = likedContentIds.contains(doc.id);
       announcements.add(News.fromJson(data));
     }
     
@@ -118,6 +117,17 @@ class AppRepository {
 
     final QuerySnapshot querySnapshot = await query.get();
 
+    // Fetch all likes for this user for news in one go to avoid N+1 queries
+    Set<String> likedContentIds = {};
+    if (uid != null) {
+      final likesSnapshot = await _firestore
+          .collection('likes')
+          .where('guest_id', isEqualTo: uid)
+          .where('content_type', isEqualTo: 'news')
+          .get();
+      likedContentIds = likesSnapshot.docs.map((doc) => doc.data()['content_id'] as String).toSet();
+    }
+
     List<News> newsList = [];
     for (var doc in querySnapshot.docs) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
@@ -141,19 +151,7 @@ class AppRepository {
         data['header_image_url'] = data['images'][0];
       }
       
-      if (uid != null) {
-        final likeQuery = await _firestore
-            .collection('likes')
-            .where('guest_id', isEqualTo: uid)
-            .where('content_id', isEqualTo: doc.id)
-            .where('content_type', isEqualTo: 'news')
-            .limit(1)
-            .get();
-        data['is_liked'] = likeQuery.docs.isNotEmpty;
-      } else {
-        data['is_liked'] = false;
-      }
-      
+      data['is_liked'] = likedContentIds.contains(doc.id);
       newsList.add(News.fromJson(data));
     }
     
@@ -331,24 +329,22 @@ class AppRepository {
         .orderBy('created_at', descending: true)
         .get();
 
+    // Fetch all likes for this user for wishes in one go to avoid N+1 queries
+    Set<String> likedContentIds = {};
+    if (uid != null) {
+      final likesSnapshot = await _firestore
+          .collection('likes')
+          .where('guest_id', isEqualTo: uid)
+          .where('content_type', isEqualTo: 'wishes')
+          .get();
+      likedContentIds = likesSnapshot.docs.map((doc) => doc.data()['content_id'] as String).toSet();
+    }
+
     List<Wish> wishes = [];
     for (var doc in querySnapshot.docs) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       data['id'] = doc.id;
-
-      if (uid != null) {
-        final likeQuery = await _firestore
-            .collection('likes')
-            .where('guest_id', isEqualTo: uid)
-            .where('content_id', isEqualTo: doc.id)
-            .where('content_type', isEqualTo: 'wishes')
-            .limit(1)
-            .get();
-        data['is_liked'] = likeQuery.docs.isNotEmpty;
-      } else {
-        data['is_liked'] = false;
-      }
-
+      data['is_liked'] = likedContentIds.contains(doc.id);
       wishes.add(Wish.fromJson(data));
     }
     

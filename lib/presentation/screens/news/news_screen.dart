@@ -5,6 +5,7 @@ import '../../../data/models/news_model.dart';
 import '../../../data/repositories/app_repository.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/services/settings_service.dart';
+import '../../../core/services/translation_service.dart';
 import '../../../core/localization/app_translations.dart';
 import '../../widgets/app_error_widget.dart';
 import '../../widgets/announcement_card.dart';
@@ -29,6 +30,7 @@ class _NewsScreenState extends State<NewsScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
+  String _translatedQuery = "";
   String? _error;
   Timer? _debounce;
 
@@ -313,8 +315,28 @@ class _NewsScreenState extends State<NewsScreen> {
                             _searchQuery = value.toLowerCase();
                           });
                           if (_debounce?.isActive ?? false) _debounce?.cancel();
-                          _debounce = Timer(const Duration(milliseconds: 500), () {
-                            if (mounted) {
+                          _debounce = Timer(const Duration(milliseconds: 500), () async {
+                            if (mounted && _searchQuery.isNotEmpty) {
+                              // Detect language and translate for cross-language search
+                              final bool isKannada = RegExp(r'[\u0C80-\u0CFF]').hasMatch(_searchQuery);
+                              final targetLang = isKannada ? 'en' : 'kn';
+                              
+                              try {
+                                final translated = await TranslationService.instance.translate(_searchQuery, targetLang);
+                                if (mounted && translated != _searchQuery) {
+                                  setState(() {
+                                    _translatedQuery = translated.toLowerCase();
+                                  });
+                                }
+                              } catch (e) {
+                                debugPrint('Search translation error: $e');
+                              }
+                              
+                              _loadInitialNews();
+                            } else if (_searchQuery.isEmpty) {
+                              setState(() {
+                                _translatedQuery = "";
+                              });
                               _loadInitialNews();
                             }
                           });
@@ -332,6 +354,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                     _searchController.clear();
                                     setState(() {
                                       _searchQuery = "";
+                                      _translatedQuery = "";
                                     });
                                     _loadInitialNews(forceRefresh: true);
                                   },
@@ -412,13 +435,66 @@ class _NewsScreenState extends State<NewsScreen> {
       );
     }
 
-    final filteredItems = _newsItems.where((item) {
-      if (_searchQuery.isEmpty) return true;
-      return item.title.toLowerCase().contains(_searchQuery) ||
-          item.description.toLowerCase().contains(_searchQuery) ||
-          item.category.toLowerCase().contains(_searchQuery) ||
-          item.location.toLowerCase().contains(_searchQuery);
-    }).toList();
+    final String query = _searchQuery.toLowerCase().trim();
+    final String translatedQuery = _translatedQuery.toLowerCase().trim();
+    List<News> filteredItems;
+
+    if (query.isEmpty) {
+      filteredItems = List.from(_newsItems);
+    } else {
+      final queryWords = query.split(RegExp(r'\s+'));
+      final translatedWords = translatedQuery.isNotEmpty 
+          ? translatedQuery.split(RegExp(r'\s+')) 
+          : <String>[];
+      
+      final List<({News item, int score})> scoredItems = [];
+
+      for (final item in _newsItems) {
+        int score = 0;
+        final title = item.title.toLowerCase();
+        final description = item.description.toLowerCase();
+        final category = item.category.toLowerCase();
+        final location = item.location.toLowerCase();
+        final date = item.date.toLowerCase();
+
+        // 1. Exact phrase match (Original Language - Highest Priority)
+        if (title.contains(query)) score += 120;
+        if (description.contains(query)) score += 60;
+
+        // 2. Exact phrase match (Translated Language)
+        if (translatedQuery.isNotEmpty) {
+          if (title.contains(translatedQuery)) score += 100;
+          if (description.contains(translatedQuery)) score += 50;
+        }
+
+        // 3. Individual word matches (Original)
+        for (final word in queryWords) {
+          if (word.length < 2) continue;
+          if (title.contains(word)) score += 20;
+          if (category.contains(word)) score += 15;
+          if (location.contains(word)) score += 15;
+          if (description.contains(word)) score += 10;
+          if (date.contains(word)) score += 10;
+        }
+
+        // 4. Individual word matches (Translated)
+        for (final word in translatedWords) {
+          if (word.length < 2) continue;
+          if (title.contains(word)) score += 15; // Slightly lower weight for translated words
+          if (category.contains(word)) score += 10;
+          if (location.contains(word)) score += 10;
+          if (description.contains(word)) score += 5;
+        }
+
+        if (score > 0) {
+          scoredItems.add((item: item, score: score));
+        }
+      }
+
+      // Sort by relevance score (descending)
+      scoredItems.sort((a, b) => b.score.compareTo(a.score));
+      filteredItems = scoredItems.map((s) => s.item).toList();
+    }
 
     if (filteredItems.isEmpty) {
       return Padding(

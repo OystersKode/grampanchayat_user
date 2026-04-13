@@ -30,7 +30,7 @@ class _WishesScreenState extends State<WishesScreen> {
 
   Future<void> _refreshWishes() async {
     setState(() {
-      _wishesFuture = AppRepository.instance.getWishes();
+      _wishesFuture = AppRepository.instance.getWishes(forceRefresh: true);
     });
   }
 
