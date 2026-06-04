@@ -9,6 +9,7 @@ import 'data/repositories/app_repository.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,10 @@ void main() async {
   await SettingsService.initialize();
   await TranslationService.instance.init();
   AppRepository.initialize();
+
+  // Initialize Notifications
+  final notificationService = NotificationService();
+  await notificationService.initialize();
 
   // Handle Anonymous Auth for Guest Users
   final authService = AuthService();
@@ -46,6 +51,7 @@ class GramPanchayatApp extends StatelessWidget {
         final double textScaleFactor = baseFontSize / 16.0;
 
         return MaterialApp(
+          navigatorKey: NotificationService.navigatorKey,
           debugShowCheckedModeBanner: false,
           title: "Kagwad.in",
           theme: AppTheme.lightTheme,
