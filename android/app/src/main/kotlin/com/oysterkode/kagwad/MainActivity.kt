@@ -1,4 +1,4 @@
-package com.example.grampanchayat_user
+package com.oysterkode.kagwad
 
 import io.flutter.embedding.android.FlutterActivity
 

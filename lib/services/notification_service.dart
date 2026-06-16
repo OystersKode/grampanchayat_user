@@ -82,8 +82,11 @@ class NotificationService {
       _handleNotificationClick(_serializePayload(initialMessage.data));
     }
 
-    // 5. Save Token
+    // 5. Save Token and listen for refreshes
     _saveToken();
+    _fcm.onTokenRefresh.listen((newToken) {
+      _saveToken(newToken);
+    });
   }
 
   String _serializePayload(Map<String, dynamic> data) {
@@ -121,14 +124,19 @@ class NotificationService {
     }
   }
 
-  Future<void> _saveToken() async {
-    String? token = await _fcm.getToken();
-    if (token != null) {
-      await FirebaseFirestore.instance.collection('user_tokens').doc(token).set({
-        'token': token,
-        'createdAt': FieldValue.serverTimestamp(),
-        'platform': Platform.isAndroid ? 'android' : 'ios',
-      });
+  Future<void> _saveToken([String? token]) async {
+    try {
+      token ??= await _fcm.getToken();
+      if (token != null) {
+        await FirebaseFirestore.instance.collection('user_tokens').doc(token).set({
+          'token': token,
+          'createdAt': FieldValue.serverTimestamp(),
+          'platform': Platform.isAndroid ? 'android' : 'ios',
+        }, SetOptions(merge: true));
+        print('FCM Token saved successfully');
+      }
+    } catch (e) {
+      print('Error saving FCM token: $e');
     }
   }
 }
