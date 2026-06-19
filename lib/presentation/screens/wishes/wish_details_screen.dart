@@ -129,8 +129,8 @@ class WishDetailsScreen extends StatelessWidget {
                   contentId: wish.id,
                   contentType: 'wishes',
                   shareText: ShareUtils.formatWishForWhatsApp(
+                    id: wish.id,
                     title: wish.title,
-                    content: wish.content,
                   ),
                   imageUrl: wish.headerImageUrl,
                   initialLikes: wish.likeCount,

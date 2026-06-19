@@ -26,7 +26,6 @@ class _NewsScreenState extends State<NewsScreen> {
   bool _isMoreLoading = false;
   bool _hasMore = true;
   DocumentSnapshot? _lastDoc;
-  int _selectedFilterIndex = 0; // 0: Today, 1: Yesterday, 2: Before
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
@@ -67,12 +66,9 @@ class _NewsScreenState extends State<NewsScreen> {
     });
 
     try {
-      final dateRange = _searchQuery.isEmpty ? _getFilterDateRange() : (start: null, end: null);
       final result = await AppRepository.instance.getNews(
-        startDate: dateRange.start,
-        endDate: dateRange.end,
         forceRefresh: forceRefresh,
-        limit: _searchQuery.isEmpty ? 10 : 50,
+        limit: 8,
       );
 
       if (mounted) {
@@ -80,7 +76,7 @@ class _NewsScreenState extends State<NewsScreen> {
           _newsItems.addAll(result.news);
           _lastDoc = result.lastDoc;
           _isLoading = false;
-          _hasMore = result.news.length == (_searchQuery.isEmpty ? 10 : 50);
+          _hasMore = result.news.length == 8;
         });
       }
     } catch (e) {
@@ -101,12 +97,9 @@ class _NewsScreenState extends State<NewsScreen> {
     });
 
     try {
-      final dateRange = _searchQuery.isEmpty ? _getFilterDateRange() : (start: null, end: null);
       final result = await AppRepository.instance.getNews(
-        startDate: dateRange.start,
-        endDate: dateRange.end,
         startAfter: _lastDoc,
-        limit: _searchQuery.isEmpty ? 10 : 50,
+        limit: 8,
       );
 
       if (mounted) {
@@ -114,7 +107,7 @@ class _NewsScreenState extends State<NewsScreen> {
           _newsItems.addAll(result.news);
           _lastDoc = result.lastDoc;
           _isMoreLoading = false;
-          _hasMore = result.news.length == (_searchQuery.isEmpty ? 10 : 50);
+          _hasMore = result.news.length == 8;
         });
       }
     } catch (e) {
@@ -123,33 +116,6 @@ class _NewsScreenState extends State<NewsScreen> {
           _isMoreLoading = false;
         });
       }
-    }
-  }
-
-  ({DateTime? start, DateTime? end}) _getFilterDateRange() {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    
-    if (_selectedFilterIndex == 0) {
-      // Today
-      return (
-        start: today,
-        end: today.add(const Duration(hours: 23, minutes: 59, seconds: 59))
-      );
-    } else if (_selectedFilterIndex == 1) {
-      // Yesterday
-      final yesterday = today.subtract(const Duration(days: 1));
-      return (
-        start: yesterday,
-        end: yesterday.add(const Duration(hours: 23, minutes: 59, seconds: 59))
-      );
-    } else {
-      // Before (Everything before yesterday)
-      final yesterdayStart = today.subtract(const Duration(days: 1));
-      return (
-        start: null,
-        end: yesterdayStart.subtract(const Duration(seconds: 1))
-      );
     }
   }
 
@@ -378,19 +344,6 @@ class _NewsScreenState extends State<NewsScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            _buildFilterChip('today'.tr(context), 0),
-                            const SizedBox(width: 8),
-                            _buildFilterChip('yesterday'.tr(context), 1),
-                            const SizedBox(width: 8),
-                            _buildFilterChip('before'.tr(context), 2),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
                     ]),
                   ),
                 ),
@@ -512,7 +465,7 @@ class _NewsScreenState extends State<NewsScreen> {
     }
 
     return Column(
-      key: ValueKey('content_$_selectedFilterIndex'),
+      key: const ValueKey('content'),
       children: filteredItems.map((item) {
         final String imageUrl = item.headerImageUrl.isNotEmpty
             ? item.headerImageUrl
@@ -539,37 +492,6 @@ class _NewsScreenState extends State<NewsScreen> {
           },
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildFilterChip(String label, int index) {
-    final isSelected = _selectedFilterIndex == index;
-    return ChoiceChip(
-      label: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? Colors.white : const Color(0xFF653D1E),
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-      selected: isSelected,
-      onSelected: (selected) {
-        if (selected) {
-          setState(() {
-            _selectedFilterIndex = index;
-            _loadInitialNews();
-          });
-        }
-      },
-      selectedColor: const Color(0xFF5E0006),
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: isSelected ? const Color(0xFF5E0006) : const Color(0xFFE5D1B5),
-        ),
-      ),
-      showCheckmark: false,
     );
   }
 }

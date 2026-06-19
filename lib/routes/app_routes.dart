@@ -11,6 +11,8 @@ import '../presentation/screens/announcements/announcements_screen.dart';
 import '../presentation/screens/villages/villages_screen.dart';
 import '../presentation/screens/vehicles/vehicles_screen.dart';
 import '../presentation/screens/onboarding/onboarding_screen.dart';
+import '../presentation/screens/institutes/institutes_screen.dart';
+import '../presentation/screens/advertisements/advertisements_screen.dart';
 
 class AppRoutes {
   static const onboarding = '/onboarding';
@@ -24,6 +26,8 @@ class AppRoutes {
   static const announcements = '/announcements';
   static const villages = '/villages';
   static const vehicles = '/vehicles';
+  static const institutes = '/institutes';
+  static const advertisements = '/advertisements';
 
   static Map<String, WidgetBuilder> routes = {
     onboarding: (context) => const OnboardingScreen(),
@@ -37,5 +41,7 @@ class AppRoutes {
     announcements: (context) => const AnnouncementsScreen(),
     villages: (context) => const VillagesScreen(),
     vehicles: (context) => const VehiclesScreen(),
+    institutes: (context) => const InstitutesScreen(),
+    advertisements: (context) => const AdvertisementsScreen(),
   };
 }

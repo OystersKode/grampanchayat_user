@@ -10,6 +10,7 @@ import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'services/notification_service.dart';
+import 'services/deep_link_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,10 @@ void main() async {
   // Initialize Notifications
   final notificationService = NotificationService();
   await notificationService.initialize();
+
+  // Initialize Deep Linking
+  final deepLinkService = DeepLinkService();
+  await deepLinkService.initialize();
 
   // Handle Anonymous Auth for Guest Users
   final authService = AuthService();

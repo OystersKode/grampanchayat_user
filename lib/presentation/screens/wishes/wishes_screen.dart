@@ -184,12 +184,12 @@ class _WishCardState extends State<WishCard> {
   Future<void> _handleShare() async {
     setState(() => _isSharing = true);
 
-    try {
-      final String text = ShareUtils.formatWishForWhatsApp(
-        title: widget.wish.title,
-        content: widget.wish.content,
-      );
+    final String text = ShareUtils.formatWishForWhatsApp(
+      id: widget.wish.id,
+      title: widget.wish.title,
+    );
 
+    try {
       if (widget.wish.headerImageUrl.isNotEmpty) {
         final response = await http.get(Uri.parse(widget.wish.headerImageUrl));
         final bytes = response.bodyBytes;
@@ -207,7 +207,7 @@ class _WishCardState extends State<WishCard> {
       }
     } catch (e) {
       debugPrint('Share Error: $e');
-      Share.share('*${widget.wish.title}*\n\n${widget.wish.content}');
+      Share.share(text);
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }
@@ -295,8 +295,8 @@ class _WishCardState extends State<WishCard> {
                   contentId: widget.wish.id,
                   contentType: 'wishes',
                   shareText: ShareUtils.formatWishForWhatsApp(
+                    id: widget.wish.id,
                     title: widget.wish.title,
-                    content: widget.wish.content,
                   ),
                   imageUrl: widget.wish.headerImageUrl,
                   initialLikes: widget.wish.likeCount,

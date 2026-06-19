@@ -21,25 +21,25 @@ class TranslationService {
   Future<String> translate(String text, String targetLanguage) async {
     if (text.isEmpty) return text;
     
+    // Clean markdown escapes (backslashes before punctuation)
+    final String cleanedSource = text.replaceAll(RegExp(r'\\(?=[.!@#\$%^&*()\-=_+\[\]{}|;:",./<>?])'), '');
+    
     // Check if text contains Kannada characters
-    bool containsKannada = RegExp(r'[\u0C80-\u0CFF]').hasMatch(text);
+    bool containsKannada = RegExp(r'[\u0C80-\u0CFF]').hasMatch(cleanedSource);
     
     // If target is English and text is already English (no Kannada chars), skip translation
-    if (targetLanguage == 'en' && !containsKannada) return text;
+    if (targetLanguage == 'en' && !containsKannada) return cleanedSource;
     
     // If target is Kannada and text is already Kannada (has Kannada chars), skip translation
-    if (targetLanguage == 'kn' && containsKannada) return text;
+    if (targetLanguage == 'kn' && containsKannada) return cleanedSource;
 
-    // Special case: If text contains BOTH English and Kannada, we might still want to translate it
-    // But for most common cases (data from admin), it's usually one or the other.
-
-    final key = '${targetLanguage}_$text';
+    final key = '${targetLanguage}_$cleanedSource';
     if (_cache.containsKey(key)) {
       return _cache[key]!;
     }
 
     try {
-      final translation = await _translator.translate(text, to: targetLanguage);
+      final translation = await _translator.translate(cleanedSource, to: targetLanguage);
       String translatedText = translation.text;
       
       // Validation: If target is Kannada, result should have Kannada chars

@@ -21,14 +21,17 @@ class TranslatedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Clean markdown escapes from the source text
+    final String cleanedText = text.replaceAll(RegExp(r'\\(?=[.!@#\$%^&*()\-=_+\[\]{}|;:",./<>?])'), '');
+
     return ListenableBuilder(
       listenable: SettingsService.instance,
       builder: (context, _) {
         final targetLang = SettingsService.instance.languageCode;
         
-        if (text.isEmpty) {
+        if (cleanedText.isEmpty) {
           return Text(
-            text,
+            cleanedText,
             style: style,
             maxLines: maxLines,
             overflow: overflow,
@@ -37,8 +40,8 @@ class TranslatedText extends StatelessWidget {
         }
 
         // 1. Check if a manual translation exists in our dictionary first
-        final String manualTranslation = text.tr(context);
-        if (manualTranslation != text) {
+        final String manualTranslation = cleanedText.tr(context);
+        if (manualTranslation != cleanedText) {
           return Text(
             manualTranslation,
             style: style,
@@ -49,13 +52,13 @@ class TranslatedText extends StatelessWidget {
         }
 
         // 2. Otherwise, determine if on-the-fly translation is needed
-        final bool containsKannada = RegExp(r'[\u0C80-\u0CFF]').hasMatch(text);
+        final bool containsKannada = RegExp(r'[\u0C80-\u0CFF]').hasMatch(cleanedText);
         final bool needsTranslation = (targetLang == 'kn' && !containsKannada) || 
                                       (targetLang == 'en' && containsKannada);
 
         if (!needsTranslation) {
           return Text(
-            text,
+            cleanedText,
             style: style,
             maxLines: maxLines,
             overflow: overflow,
@@ -64,11 +67,11 @@ class TranslatedText extends StatelessWidget {
         }
 
         return FutureBuilder<String>(
-          future: TranslationService.instance.translate(text, targetLang),
-          initialData: text,
+          future: TranslationService.instance.translate(cleanedText, targetLang),
+          initialData: cleanedText,
           builder: (context, snapshot) {
             return Text(
-              snapshot.data ?? text,
+              snapshot.data ?? cleanedText,
               style: style,
               maxLines: maxLines,
               overflow: overflow,

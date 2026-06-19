@@ -1,3 +1,5 @@
+import '../config/app_config.dart';
+
 class ShareUtils {
   static String formatForWhatsApp(String text) {
     if (text.isEmpty) return '';
@@ -14,34 +16,26 @@ class ShareUtils {
   }
 
   static String formatNewsForWhatsApp({
+    required String id,
     required String title,
-    required String description,
   }) {
     final String formattedTitle = '*${title.trim()}*';
-    final String formattedDescription = formatForWhatsApp(description);
-    
-    final String truncatedDescription = formattedDescription.length > 300 
-        ? '${formattedDescription.substring(0, 300)}...' 
-        : formattedDescription;
+    final String link = '${AppConfig.shareBaseUrl}/news/$id';
     
     return '$formattedTitle\n\n'
-           '$truncatedDescription\n\n'
+           'Read more at: $link\n\n'
            '📍 *Village Details:* Kagwad Gram Panchayat';
   }
 
   static String formatWishForWhatsApp({
+    required String id,
     required String title,
-    required String content,
   }) {
     final String formattedTitle = '*${title.trim()}*';
-    final String formattedContent = formatForWhatsApp(content);
-    
-    final String truncatedContent = formattedContent.length > 500 
-        ? '${formattedContent.substring(0, 500)}...'
-        : formattedContent;
+    final String link = '${AppConfig.shareBaseUrl}/wishes/$id';
     
     return '$formattedTitle\n\n'
-           '$truncatedContent\n\n'
+           'View here: $link\n\n'
            '✨ *From:* Kagwad Gram Panchayat';
   }
 }

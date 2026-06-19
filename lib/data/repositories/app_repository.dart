@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import '../models/news_model.dart';
 import '../models/wish_model.dart';
+import '../models/institute_model.dart';
+import '../models/advertisement_model.dart';
 
 class AppRepository {
   AppRepository._(this._firestore, this._auth);
@@ -350,5 +352,41 @@ class AppRepository {
     
     _wishesCache['all'] = wishes;
     return wishes;
+  }
+
+  Future<List<Institute>> getInstitutes() async {
+    try {
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('institutes')
+          .orderBy('name')
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return Institute.fromJson(data);
+      }).toList();
+    } catch (e) {
+      debugPrint("Error fetching institutes: $e");
+      rethrow;
+    }
+  }
+
+  Future<List<Advertisement>> getAdvertisements() async {
+    try {
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('advertisements')
+          .orderBy('created_at', descending: true)
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return Advertisement.fromJson(data);
+      }).toList();
+    } catch (e) {
+      debugPrint("Error fetching advertisements: $e");
+      rethrow;
+    }
   }
 }

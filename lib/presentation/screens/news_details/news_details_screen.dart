@@ -170,8 +170,8 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                       contentId: item.id,
                       contentType: 'news',
                       shareText: ShareUtils.formatNewsForWhatsApp(
+                        id: item.id,
                         title: item.title,
-                        description: item.description,
                       ),
                       imageUrl: heroImage,
                       initialLikes: item.likeCount,

@@ -78,6 +78,18 @@ class AppSidebar extends StatelessWidget {
                 ),
                 _buildDrawerItem(
                   context,
+                  icon: Icons.school,
+                  title: 'taluka_institutes'.tr(context),
+                  route: AppRoutes.institutes,
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.ad_units,
+                  title: 'advertisements'.tr(context),
+                  route: AppRoutes.advertisements,
+                ),
+                _buildDrawerItem(
+                  context,
                   icon: Icons.directions_car,
                   title: 'taluka_vehicles'.tr(context),
                   route: AppRoutes.vehicles,

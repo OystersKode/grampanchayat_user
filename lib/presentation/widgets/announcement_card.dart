@@ -112,12 +112,12 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
   Future<void> _handleShare() async {
     setState(() => _isLoading = true);
 
-    try {
-      final String text = ShareUtils.formatNewsForWhatsApp(
-        title: widget.title,
-        description: widget.description,
-      );
+    final String text = ShareUtils.formatNewsForWhatsApp(
+      id: widget.contentId,
+      title: widget.title,
+    );
 
+    try {
       if (widget.imageUrl.isNotEmpty) {
         final response = await http.get(Uri.parse(widget.imageUrl));
         final bytes = response.bodyBytes;
@@ -135,7 +135,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
       }
     } catch (e) {
       debugPrint('Share Error: $e');
-      Share.share('*${widget.title}*');
+      Share.share(text);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -357,6 +357,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
   String _stripMarkdown(String text) {
     // Basic regex to remove common markdown symbols for the card preview
     return text
+        .replaceAll(RegExp(r'\\(?=[.!@#\$%^&*()\-=_+\[\]{}|;:",./<>?])'), '') // Remove markdown escapes
         .replaceAll(RegExp(r'\*\*|__'), '') // Bold
         .replaceAll(RegExp(r'\*|_'), '')    // Italic
         .replaceAll(RegExp(r'#+\s'), '')    // Headers
