@@ -9,7 +9,7 @@ class AppConfig {
   );
 
   // Link for sharing news (e.g. your web portal)
-  static const String shareBaseUrl = 'https://kagwad-portal.web.app';
+  static const String shareBaseUrl = 'https://grampanchayat-64901.web.app';
 
   static String get apiV1BaseUrl => '$apiBaseUrl/api/v1';
 }

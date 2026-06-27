@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.oysterkode.kagwad",
+      "sha256_cert_fingerprints": [
+        "C1:91:2E:8C:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B"
+      ]
+    }
+  }
+]

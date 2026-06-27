@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kagwad Taluka News</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #FFF8EF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            color: #370002;
+        }
+        .container {
+            padding: 20px;
+            max-width: 400px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            background-color: #5E0006;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        p { color: #653D1E; line-height: 1.5; margin-bottom: 24px; }
+        .btn {
+            background-color: #5E0006;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">K</div>
+        <h1>Opening Kagwad App...</h1>
+        <p>If the app is installed, it should open automatically. Otherwise, we'll take you to the Play Store.</p>
+        <a href="https://play.google.com/store/apps/details?id=com.oysterkode.kagwad" class="btn">Install from Play Store</a>
+    </div>
+
+    <script>
+        const playStoreUrl = "https://play.google.com/store/apps/details?id=com.oysterkode.kagwad";
+
+        // Immediate redirect attempt
+        window.location.replace(playStoreUrl);
+
+        // Fallback for older browsers
+        setTimeout(function() {
+            window.location.href = playStoreUrl;
+        }, 1500);
+    </script>
+</body>
+</html>
