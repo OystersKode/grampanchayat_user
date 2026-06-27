@@ -87,6 +87,13 @@ class NotificationService {
     _fcm.onTokenRefresh.listen((newToken) {
       _saveToken(newToken);
     });
+
+    // 6. Subscribe to topics
+    await _fcm.subscribeToTopic('all_users');
+    await _fcm.subscribeToTopic('announcements');
+    await _fcm.subscribeToTopic('news');
+    await _fcm.subscribeToTopic('advertisements');
+    await _fcm.subscribeToTopic('institutes');
   }
 
   String _serializePayload(Map<String, dynamic> data) {
@@ -121,6 +128,10 @@ class NotificationService {
       }
     } else if (type == 'announcement') {
       navigatorKey.currentState?.pushNamed(AppRoutes.announcements);
+    } else if (type == 'advertisement') {
+      navigatorKey.currentState?.pushNamed(AppRoutes.advertisements);
+    } else if (type == 'institute') {
+      navigatorKey.currentState?.pushNamed(AppRoutes.institutes);
     }
   }
 

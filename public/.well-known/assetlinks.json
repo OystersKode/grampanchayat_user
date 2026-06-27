@@ -7,7 +7,10 @@
       "namespace": "android_app",
       "package_name": "com.oysterkode.kagwad",
       "sha256_cert_fingerprints": [
-        "C1:91:2E:8C:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B"
+        "C1:91:2E:8C:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B:D7:0E:3B:5F:8B",
+        "61:03:F1:2F:42:C2:7E:79:91:00:16:92:63:E0:E3:07:74:E4:2D:33:30:51:10:39:12:8D:95:1C:05:0A:5D:C5",
+        "6C:A0:4A:CD:0D:05:22:09:4E:53:74:90:38:56:53:3C:0D:F1:59:B3:F0:32:A5:A3:53:09:F3:EB:4B:05:45:60",
+        "4E:5C:E6:E4:23:C6:0C:87:EC:E1:DD:EC:07:A5:7B:01:E6:C3:2C:4A:6E:49:47:D8:5F:EB:0A:F0:0E:AD:5E:0F"
       ]
     }
   }

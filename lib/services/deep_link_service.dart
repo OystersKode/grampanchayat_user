@@ -32,6 +32,9 @@ class DeepLinkService {
   void _handleDeepLink(Uri uri) async {
     debugPrint('Received Deep Link: $uri');
     
+    // Give the app a moment to build the navigator if it's just starting
+    await Future.delayed(const Duration(milliseconds: 500));
+
     // Path structure expected: /news/ID or /wishes/ID
     final pathSegments = uri.pathSegments;
     if (pathSegments.length < 2) return;
