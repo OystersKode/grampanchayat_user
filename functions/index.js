@@ -50,14 +50,35 @@ exports.onNewsUpdated = onDocumentUpdated("news/{newsId}", async (event) => {
     return null;
 });
 
-async function sendNotificationToAll(type, id, title, body) {
-    const tokensSnapshot = await db.collection("user_tokens").get();
-    const tokens = tokensSnapshot.docs.map((doc) => doc.id);
+// NEW: Advertisement Notification
+exports.onAdvertisementCreated = onDocumentCreated("advertisements/{adId}", async (event) => {
+    const ad = event.data.data();
+    if (!ad) return null;
 
-    if (tokens.length === 0) {
-        console.log("No tokens found");
-        return null;
+    // Check if the admin app set 'send_notification'
+    if (ad.send_notification && !ad.notification_sent) {
+        return sendNotificationToAll("advertisement", event.params.adId, ad.title, "New village advertisement posted");
     }
+    return null;
+});
+
+// NEW: Institute Notification
+exports.onInstituteCreated = onDocumentCreated("institutes/{instId}", async (event) => {
+    const inst = event.data.data();
+    if (!inst) return null;
+
+    // Check if the admin app set 'send_notification'
+    if (inst.send_notification && !inst.notification_sent) {
+        return sendNotificationToAll("institute", event.params.instId, inst.name, "New school/college added to directory");
+    }
+    return null;
+});
+
+async function sendNotificationToAll(type, id, title, body) {
+    // We send to topics for better scalability and to match the Flutter app subscriptions
+    const topic = type === "advertisement" ? "advertisements" :
+                 (type === "institute" ? "institutes" :
+                 (type === "announcement" ? "announcements" : type));
 
     const message = {
         notification: {
@@ -69,21 +90,30 @@ async function sendNotificationToAll(type, id, title, body) {
             id: id,
             click_action: "FLUTTER_NOTIFICATION_CLICK",
         },
-        tokens: tokens,
+        topic: topic,
     };
 
     try {
-        const response = await fcm.sendEachForMulticast(message);
-        console.log("Successfully sent message:", response);
+        const response = await fcm.send(message);
+        console.log(`Successfully sent topic message (${topic}):`, response);
 
-        const collection = type === "announcement" ? "announcements" : (type === "wishes" ? "wishes" : "news");
+        // Update the document to mark notification as sent
+        const collectionsMap = {
+            "news": "news",
+            "wishes": "wishes",
+            "announcement": "announcements",
+            "advertisement": "advertisements",
+            "institute": "institutes"
+        };
+
+        const collection = collectionsMap[type] || type;
         await db.collection(collection).doc(id).update({
             notification_sent: true,
         });
 
         return response;
     } catch (error) {
-        console.log("Error sending message:", error);
+        console.log("Error sending topic message:", error);
         return null;
     }
 }

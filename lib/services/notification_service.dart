@@ -101,22 +101,23 @@ class NotificationService {
   }
 
   void _handleNotificationClick(String payload) async {
+    debugPrint("Notification Clicked with payload: $payload");
     final parts = payload.split('|');
-    if (parts.length < 2) return;
-
+    
+    // Fallback: If payload is just a type without ID, or malformed
     final type = parts[0];
-    final id = parts[1];
+    final id = parts.length > 1 ? parts[1] : "";
 
-    if (type == 'news') {
+    if (type == 'news' && id.isNotEmpty) {
       try {
         final newsItem = await AppRepository.instance.getNewsDetails(id);
         navigatorKey.currentState?.push(
           MaterialPageRoute(builder: (context) => NewsDetailsScreen(news: newsItem)),
         );
       } catch (e) {
-        print('Error fetching news for deep link: $e');
+        debugPrint('Error fetching news for deep link: $e');
       }
-    } else if (type == 'wishes') {
+    } else if (type == 'wishes' && id.isNotEmpty) {
       try {
         final wishes = await AppRepository.instance.getWishes();
         final wish = wishes.firstWhere((w) => w.id == id);
@@ -124,13 +125,13 @@ class NotificationService {
           MaterialPageRoute(builder: (context) => WishDetailsScreen(wish: wish)),
         );
       } catch (e) {
-        print('Error fetching wish for deep link: $e');
+        debugPrint('Error fetching wish for deep link: $e');
       }
-    } else if (type == 'announcement') {
+    } else if (type == 'announcement' || type == 'announcements') {
       navigatorKey.currentState?.pushNamed(AppRoutes.announcements);
-    } else if (type == 'advertisement') {
+    } else if (type == 'advertisement' || type == 'advertisements') {
       navigatorKey.currentState?.pushNamed(AppRoutes.advertisements);
-    } else if (type == 'institute') {
+    } else if (type == 'institute' || type == 'institutes') {
       navigatorKey.currentState?.pushNamed(AppRoutes.institutes);
     }
   }
